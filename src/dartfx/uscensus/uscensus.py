@@ -44,13 +44,15 @@ class UsCensusApi(BaseModel):
     user_agent: str = f"dartfx-uscensus/{__version__}"
     _session: CachedSession
 
-
     def __init__(self, api_key: Optional[str] = None, session: Optional[CachedSession] = None, **kwargs):
         super().__init__(api_key=api_key, **kwargs)  # Call Pydantic's __init__ FIRST
         if session is None:
             self._session = CachedSession(backend="memory")  # create an in-memory session
         else:
             self._session = session
+        # set a 24h cache expiration for api.census.gov
+        if 'api.census.gov' not in self._session.settings.urls_expire_after:
+            self._session.settings.urls_expire_after['api.census.gov'] = 24*60*60
 
     def request(self, method, path, description=None, content_type="application/json", **kwargs):
         """Call the API."""

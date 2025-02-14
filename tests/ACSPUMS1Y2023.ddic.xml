@@ -7,7 +7,7 @@
 				<IDNo agency="census.gov">ACSPUMS1Y2023</IDNo>
 			</titlStmt>
 			<prodStmt>
-				<prodDate date="2025-02-11T12:03:02">2025-02-11T12:03:02</prodDate>
+				<prodDate date="2025-02-14T10:46:40">2025-02-14T10:46:40</prodDate>
 				<software version="0.0.1">Data Artifex - U.S. Census (darfx-uscensus)</software>
 			</prodStmt>
 		</citation>
