@@ -127,7 +127,7 @@ class UsCensusCatalog(BaseModel):
         return self._data.get("dataset",[])
     
     @property
-    def datasets(self) -> list["UsCensusDataset"]:
+    def datasets(self) -> dict[str,"UsCensusDataset"]:
         if not self._datasets:
             for dataset in self._get_datasets():
                 if dataset.get("c_isAggregate", False):
@@ -195,6 +195,18 @@ class UsCensusDataset(BaseModel):
     temporal: str | None = None
     publisher: dict
     
+    class Geography(BaseModel): 
+        
+        class Fips(BaseModel):
+            name: str
+            geoLevelDisplay: str
+            referenceDate: str
+            requires: list[str] | None = None
+        
+        default: list[dict]
+        fips: list[Fips] 
+        
+    
     class Variable(BaseModel):
         
         class Values(BaseModel):
@@ -238,7 +250,7 @@ class UsCensusDataset(BaseModel):
                 return mlc.DataType.TEXT
             return mlc.DataType.TEXT
             
-
+    _geography: Geography = None
     _variables: dict[str, Variable] = None
     
     @cached_property
@@ -282,16 +294,36 @@ class UsCensusDataset(BaseModel):
         return self.distribution[0]["accessURL"]
 
     @property
+    def geography(self):
+        if not self._geography:
+            # retrieve geography.json file
+            # http://api.census.gov/data/2023/acs/acs1/pums/geography.json
+            self._variables = {}
+            data = self._get_geography()
+            self._geography = self.Geography(**data)
+        return self._geography
+
+    @property
     def variables(self):
         if not self._variables:
             # retrieve variables.json file
+            # http://api.census.gov/data/2023/acs/acs1/pums/variables.json
             self._variables = {}
-            data = self.api._session.get(self.c_variablesLink).json()
+            data = self._get_variables()
             json_variables = data.get("variables", {}) 
             for name, variable_data in json_variables.items():
                 self._variables[name] = self.Variable(name=name, **variable_data)
         return self._variables
 
+    def _get_geography(self):
+        """Retrieve geography.json file from server"""
+        data = self.api._session.get(self.c_geographyLink).json()
+        return data
+    
+    def _get_variables(self):
+        """Retrieve variables.json file from server"""
+        data = self.api._session.get(self.c_variablesLink).json()
+        return data     
 
     def get_croissant(self, include_computed=False) -> mlc.Metadata:
         context = mlc.Context()

@@ -21,3 +21,8 @@ def api():
 def catalog(api):
     return UsCensusCatalog(api)
 
+
+@pytest.fixture(scope="session", autouse=True)
+def acs2023(catalog):
+    dataset = catalog.datasets.get("ACSPUMS1Y2023")
+    return dataset
