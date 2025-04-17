@@ -227,7 +227,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dataset&quot;</span><span class="p">,[])</span>
     
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;UsCensusDataset&quot;</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="s2">&quot;UsCensusDataset&quot;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_datasets</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;c_isAggregate&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
@@ -298,6 +298,24 @@
     <span class="n">temporal</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">publisher</span><span class="p">:</span> <span class="nb">dict</span>
     
+<div class="viewcode-block" id="UsCensusDataset.Geography">
+<a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.Geography">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Geography</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span> 
+        
+<div class="viewcode-block" id="UsCensusDataset.Geography.Fips">
+<a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.Geography.Fips">[docs]</a>
+        <span class="k">class</span><span class="w"> </span><span class="nc">Fips</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+            <span class="n">geoLevelDisplay</span><span class="p">:</span> <span class="nb">str</span>
+            <span class="n">referenceDate</span><span class="p">:</span> <span class="nb">str</span>
+            <span class="n">requires</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+        
+        <span class="n">default</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
+        <span class="n">fips</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Fips</span><span class="p">]</span> </div>
+
+        
+    
 <div class="viewcode-block" id="UsCensusDataset.Variable">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.Variable">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Variable</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -350,7 +368,7 @@
             <span class="k">return</span> <span class="n">mlc</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">TEXT</span></div>
 
             
-
+    <span class="n">_geography</span><span class="p">:</span> <span class="n">Geography</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Variable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     
 <div class="viewcode-block" id="UsCensusDataset.id">
@@ -397,16 +415,36 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;accessURL&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">geography</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geography</span><span class="p">:</span>
+            <span class="c1"># retrieve geography.json file</span>
+            <span class="c1"># http://api.census.gov/data/2023/acs/acs1/pums/geography.json</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_geography</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_geography</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Geography</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geography</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">:</span>
             <span class="c1"># retrieve variables.json file</span>
+            <span class="c1"># http://api.census.gov/data/2023/acs/acs1/pums/variables.json</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_variablesLink</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_variables</span><span class="p">()</span>
             <span class="n">json_variables</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;variables&quot;</span><span class="p">,</span> <span class="p">{})</span> 
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">variable_data</span> <span class="ow">in</span> <span class="n">json_variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">variable_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_geography</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve geography.json file from server&quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_geographyLink</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve variables.json file from server&quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_variablesLink</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>     
 
 <div class="viewcode-block" id="UsCensusDataset.get_croissant">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.get_croissant">[docs]</a>

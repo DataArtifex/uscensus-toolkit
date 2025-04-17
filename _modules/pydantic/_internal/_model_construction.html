@@ -83,12 +83,13 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABCMeta</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span><span class="p">,</span> <span class="n">partial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache</span><span class="p">,</span> <span class="n">partial</span><span class="p">,</span> <span class="n">wraps</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_core</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticUndefined</span><span class="p">,</span> <span class="n">SchemaSerializer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAliasType</span><span class="p">,</span> <span class="n">dataclass_transform</span><span class="p">,</span> <span class="n">deprecated</span><span class="p">,</span> <span class="n">get_args</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAliasType</span><span class="p">,</span> <span class="n">dataclass_transform</span><span class="p">,</span> <span class="n">deprecated</span><span class="p">,</span> <span class="n">get_args</span><span class="p">,</span> <span class="n">get_origin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_inspection</span><span class="w"> </span><span class="kn">import</span> <span class="n">typing_objects</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticUndefinedAnnotation</span><span class="p">,</span> <span class="n">PydanticUserError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..plugin._schema_validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_schema_validator</span>
@@ -96,25 +97,23 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">._config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigWrapper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">DecoratorInfos</span><span class="p">,</span> <span class="n">PydanticDescriptorProxy</span><span class="p">,</span> <span class="n">get_attribute_from_bases</span><span class="p">,</span> <span class="n">unwrap_wrapped_function</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">collect_model_fields</span><span class="p">,</span> <span class="n">is_valid_field_name</span><span class="p">,</span> <span class="n">is_valid_privateattr_name</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">._generate_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerateSchema</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._generate_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerateSchema</span><span class="p">,</span> <span class="n">InvalidSchemaError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._generics</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticGenericMetadata</span><span class="p">,</span> <span class="n">get_model_typevars_map</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._import_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_cached_base_model</span><span class="p">,</span> <span class="n">import_cached_field_info</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._mock_val_ser</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_model_mocks</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._namespace_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">NsResolver</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">._schema_generation_shared</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallbackGetCoreSchemaHandler</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._signature</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_pydantic_signature</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._typing_extra</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_make_forward_ref</span><span class="p">,</span>
     <span class="n">eval_type_backport</span><span class="p">,</span>
-    <span class="n">is_annotated</span><span class="p">,</span>
     <span class="n">is_classvar_annotation</span><span class="p">,</span>
     <span class="n">parent_frame_namespace</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">LazyClassAttribute</span><span class="p">,</span> <span class="n">SafeGetItemProxy</span>
 
 <span class="k">if</span> <span class="n">typing</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">..fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComputedFieldInfo</span><span class="p">,</span> <span class="n">FieldInfo</span><span class="p">,</span> <span class="n">ModelPrivateAttr</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">..fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span> <span class="k">as</span> <span class="n">PydanticModelField</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldInfo</span><span class="p">,</span> <span class="n">ModelPrivateAttr</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">..fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrivateAttr</span> <span class="k">as</span> <span class="n">PydanticModelPrivateAttr</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">..main</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 <span class="k">else</span><span class="p">:</span>
@@ -192,6 +191,7 @@
                 <span class="k">if</span> <span class="n">original_model_post_init</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># if there are private_attributes and a model_post_init function, we handle both</span>
 
+                    <span class="nd">@wraps</span><span class="p">(</span><span class="n">original_model_post_init</span><span class="p">)</span>
                     <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">                        </span><span class="sd">&quot;&quot;&quot;We need to both initialize private attributes and call the user-defined model_post_init</span>
 <span class="sd">                        method.</span>
@@ -223,6 +223,8 @@
             <span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_post_init__</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="kc">None</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_post_init</span> <span class="ow">is</span> <span class="n">BaseModel_</span><span class="o">.</span><span class="n">model_post_init</span> <span class="k">else</span> <span class="s1">&#39;model_post_init&#39;</span>
             <span class="p">)</span>
+
+            <span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_setattr_handlers__</span> <span class="o">=</span> <span class="p">{}</span>
 
             <span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_decorators__</span> <span class="o">=</span> <span class="n">DecoratorInfos</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
@@ -290,27 +292,32 @@
 
             <span class="n">ns_resolver</span> <span class="o">=</span> <span class="n">NsResolver</span><span class="p">(</span><span class="n">parent_namespace</span><span class="o">=</span><span class="n">parent_namespace</span><span class="p">)</span>
 
-            <span class="n">set_model_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">config_wrapper</span><span class="p">,</span> <span class="n">ns_resolver</span><span class="p">)</span>
+            <span class="n">set_model_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config_wrapper</span><span class="o">=</span><span class="n">config_wrapper</span><span class="p">,</span> <span class="n">ns_resolver</span><span class="o">=</span><span class="n">ns_resolver</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">config_wrapper</span><span class="o">.</span><span class="n">frozen</span> <span class="ow">and</span> <span class="s1">&#39;__hash__&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">namespace</span><span class="p">:</span>
-                <span class="n">set_default_hash_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bases</span><span class="p">)</span>
-
-            <span class="n">complete_model_class</span><span class="p">(</span>
-                <span class="bp">cls</span><span class="p">,</span>
-                <span class="n">cls_name</span><span class="p">,</span>
-                <span class="n">config_wrapper</span><span class="p">,</span>
-                <span class="n">raise_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">ns_resolver</span><span class="o">=</span><span class="n">ns_resolver</span><span class="p">,</span>
-                <span class="n">create_model_module</span><span class="o">=</span><span class="n">_create_model_module</span><span class="p">,</span>
-            <span class="p">)</span>
-
-            <span class="c1"># If this is placed before the complete_model_class call above,</span>
-            <span class="c1"># the generic computed fields return type is set to PydanticUndefined</span>
+            <span class="c1"># This is also set in `complete_model_class()`, after schema gen because they are recreated.</span>
+            <span class="c1"># We set them here as well for backwards compatibility:</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_computed_fields__</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">info</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_decorators__</span><span class="o">.</span><span class="n">computed_fields</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">}</span>
 
-            <span class="n">set_deprecated_descriptors</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">config_wrapper</span><span class="o">.</span><span class="n">defer_build</span><span class="p">:</span>
+                <span class="c1"># TODO we can also stop there if `__pydantic_fields_complete__` is False.</span>
+                <span class="c1"># However, `set_model_fields()` is currently lenient and we don&#39;t have access to the `NameError`.</span>
+                <span class="c1"># (which is useful as we can provide the name in the error message: `set_model_mock(cls, e.name)`)</span>
+                <span class="n">set_model_mocks</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Any operation that requires accessing the field infos instances should be put inside</span>
+                <span class="c1"># `complete_model_class()`:</span>
+                <span class="n">complete_model_class</span><span class="p">(</span>
+                    <span class="bp">cls</span><span class="p">,</span>
+                    <span class="n">config_wrapper</span><span class="p">,</span>
+                    <span class="n">raise_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">ns_resolver</span><span class="o">=</span><span class="n">ns_resolver</span><span class="p">,</span>
+                    <span class="n">create_model_module</span><span class="o">=</span><span class="n">_create_model_module</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">config_wrapper</span><span class="o">.</span><span class="n">frozen</span> <span class="ow">and</span> <span class="s1">&#39;__hash__&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">namespace</span><span class="p">:</span>
+                <span class="n">set_default_hash_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bases</span><span class="p">)</span>
 
             <span class="c1"># using super(cls, cls) on the next line ensures we only call the parent class&#39;s __pydantic_init_subclass__</span>
             <span class="c1"># I believe the `type: ignore` is only necessary because mypy doesn&#39;t realize that this code branch is</span>
@@ -342,11 +349,18 @@
         <span class="k">return</span> <span class="n">_ModelNamespaceDict</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__instancecheck__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Avoid calling ABC _abc_instancecheck unless we&#39;re pretty sure.</span>
+
+<span class="sd">        See #3829 and python/cpython#92810</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s1">&#39;__pydantic_decorators__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__instancecheck__</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__subclasscheck__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subclass</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Avoid calling ABC _abc_subclasscheck unless we&#39;re pretty sure.</span>
 
 <span class="sd">        See #3829 and python/cpython#92810</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s1">&#39;__pydantic_validator__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__instancecheck__</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">subclass</span><span class="p">,</span> <span class="s1">&#39;__pydantic_decorators__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__subclasscheck__</span><span class="p">(</span><span class="n">subclass</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_collect_bases_data</span><span class="p">(</span><span class="n">bases</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ModelPrivateAttr</span><span class="p">]]:</span>
@@ -371,25 +385,20 @@
             <span class="n">PydanticDeprecatedSince20</span><span class="p">,</span>
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_fields</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">model_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldInfo</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata about the fields defined on the model.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            A mapping of field names to [`FieldInfo`][pydantic.fields.FieldInfo] objects.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__pydantic_fields__&#39;</span><span class="p">,</span> <span class="p">{})</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">model_computed_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ComputedFieldInfo</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata about the computed fields defined on the model.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__pydantic_fields_complete__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether the fields where successfully collected (i.e. type hints were successfully resolves).</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            A mapping of computed field names to [`ComputedFieldInfo`][pydantic.fields.ComputedFieldInfo] objects.</span>
+<span class="sd">        This is a private attribute, not meant to be used outside Pydantic.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__pydantic_computed_fields__&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;__pydantic_fields__&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">field_infos</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s1">&#39;dict[str, FieldInfo]&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pydantic_fields__</span><span class="p">)</span>  <span class="c1"># pyright: ignore[reportAttributeAccessIssue]</span>
+
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">field_info</span><span class="o">.</span><span class="n">_complete</span> <span class="k">for</span> <span class="n">field_info</span> <span class="ow">in</span> <span class="n">field_infos</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">attributes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__dir__</span><span class="p">())</span>
@@ -553,7 +562,7 @@
                     <span class="k">except</span> <span class="p">(</span><span class="ne">NameError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
                         <span class="k">pass</span>
 
-            <span class="k">if</span> <span class="n">is_annotated</span><span class="p">(</span><span class="n">ann_type</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">typing_objects</span><span class="o">.</span><span class="n">is_annotated</span><span class="p">(</span><span class="n">get_origin</span><span class="p">(</span><span class="n">ann_type</span><span class="p">)):</span>
                 <span class="n">_</span><span class="p">,</span> <span class="o">*</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">ann_type</span><span class="p">)</span>
                 <span class="n">private_attr</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ModelPrivateAttr</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">private_attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -595,7 +604,6 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">set_model_fields</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">],</span>
-    <span class="n">bases</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="o">...</span><span class="p">],</span>
     <span class="n">config_wrapper</span><span class="p">:</span> <span class="n">ConfigWrapper</span><span class="p">,</span>
     <span class="n">ns_resolver</span><span class="p">:</span> <span class="n">NsResolver</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -603,12 +611,11 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        cls: BaseModel or dataclass.</span>
-<span class="sd">        bases: Parents of the class, generally `cls.__bases__`.</span>
 <span class="sd">        config_wrapper: The config wrapper instance.</span>
 <span class="sd">        ns_resolver: Namespace resolver to use when getting model annotations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">typevars_map</span> <span class="o">=</span> <span class="n">get_model_typevars_map</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-    <span class="n">fields</span><span class="p">,</span> <span class="n">class_vars</span> <span class="o">=</span> <span class="n">collect_model_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">config_wrapper</span><span class="p">,</span> <span class="n">ns_resolver</span><span class="p">,</span> <span class="n">typevars_map</span><span class="o">=</span><span class="n">typevars_map</span><span class="p">)</span>
+    <span class="n">fields</span><span class="p">,</span> <span class="n">class_vars</span> <span class="o">=</span> <span class="n">collect_model_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config_wrapper</span><span class="p">,</span> <span class="n">ns_resolver</span><span class="p">,</span> <span class="n">typevars_map</span><span class="o">=</span><span class="n">typevars_map</span><span class="p">)</span>
 
     <span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_fields__</span> <span class="o">=</span> <span class="n">fields</span>
     <span class="bp">cls</span><span class="o">.</span><span class="n">__class_vars__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">class_vars</span><span class="p">)</span>
@@ -628,7 +635,6 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">complete_model_class</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">],</span>
-    <span class="n">cls_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">config_wrapper</span><span class="p">:</span> <span class="n">ConfigWrapper</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">raise_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -642,7 +648,6 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        cls: BaseModel or dataclass.</span>
-<span class="sd">        cls_name: The model or dataclass name.</span>
 <span class="sd">        config_wrapper: The config wrapper instance.</span>
 <span class="sd">        raise_errors: Whether to raise errors.</span>
 <span class="sd">        ns_resolver: The namespace resolver instance to use during schema building.</span>
@@ -655,10 +660,6 @@
 <span class="sd">        PydanticUndefinedAnnotation: If `PydanticUndefinedAnnotation` occurs in`__get_pydantic_core_schema__`</span>
 <span class="sd">            and `raise_errors=True`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">config_wrapper</span><span class="o">.</span><span class="n">defer_build</span><span class="p">:</span>
-        <span class="n">set_model_mocks</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
     <span class="n">typevars_map</span> <span class="o">=</span> <span class="n">get_model_typevars_map</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
     <span class="n">gen_schema</span> <span class="o">=</span> <span class="n">GenerateSchema</span><span class="p">(</span>
         <span class="n">config_wrapper</span><span class="p">,</span>
@@ -666,29 +667,28 @@
         <span class="n">typevars_map</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">handler</span> <span class="o">=</span> <span class="n">CallbackGetCoreSchemaHandler</span><span class="p">(</span>
-        <span class="n">partial</span><span class="p">(</span><span class="n">gen_schema</span><span class="o">.</span><span class="n">generate_schema</span><span class="p">,</span> <span class="n">from_dunder_get_core_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-        <span class="n">gen_schema</span><span class="p">,</span>
-        <span class="n">ref_mode</span><span class="o">=</span><span class="s1">&#39;unpack&#39;</span><span class="p">,</span>
-    <span class="p">)</span>
-
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__get_pydantic_core_schema__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">handler</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">gen_schema</span><span class="o">.</span><span class="n">generate_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">PydanticUndefinedAnnotation</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">raise_errors</span><span class="p">:</span>
             <span class="k">raise</span>
-        <span class="n">set_model_mocks</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;`</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
+        <span class="n">set_model_mocks</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;`</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">`&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="n">core_config</span> <span class="o">=</span> <span class="n">config_wrapper</span><span class="o">.</span><span class="n">core_config</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">gen_schema</span><span class="o">.</span><span class="n">clean_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">gen_schema</span><span class="o">.</span><span class="n">CollectedInvalid</span><span class="p">:</span>
-        <span class="n">set_model_mocks</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">InvalidSchemaError</span><span class="p">:</span>
+        <span class="n">set_model_mocks</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="c1"># debug(schema)</span>
+    <span class="c1"># This needs to happen *after* model schema generation, as the return type</span>
+    <span class="c1"># of the properties are evaluated and the `ComputedFieldInfo` are recreated:</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_computed_fields__</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">info</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_decorators__</span><span class="o">.</span><span class="n">computed_fields</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="n">set_deprecated_descriptors</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
     <span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_core_schema__</span> <span class="o">=</span> <span class="n">schema</span>
 
     <span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_validator__</span> <span class="o">=</span> <span class="n">create_schema_validator</span><span class="p">(</span>
@@ -712,7 +712,7 @@
             <span class="n">generate_pydantic_signature</span><span class="p">,</span>
             <span class="n">init</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
             <span class="n">fields</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">__pydantic_fields__</span><span class="p">,</span>
-            <span class="n">populate_by_name</span><span class="o">=</span><span class="n">config_wrapper</span><span class="o">.</span><span class="n">populate_by_name</span><span class="p">,</span>
+            <span class="n">validate_by_name</span><span class="o">=</span><span class="n">config_wrapper</span><span class="o">.</span><span class="n">validate_by_name</span><span class="p">,</span>
             <span class="n">extra</span><span class="o">=</span><span class="n">config_wrapper</span><span class="o">.</span><span class="n">extra</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">)</span>
@@ -846,7 +846,7 @@
     <span class="k">return</span> <span class="n">result</span>
 
 
-<span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="nd">@cache</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">default_ignored_types</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="o">...</span><span class="p">]:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">..fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComputedFieldInfo</span>
 
