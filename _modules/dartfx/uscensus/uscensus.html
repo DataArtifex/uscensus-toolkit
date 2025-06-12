@@ -79,7 +79,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">mlcroissant</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mlc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.__about__</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">computed_field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">requests_cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">CachedSession</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">xml.sax.saxutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">escape</span>
@@ -119,7 +119,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UsCensusApi</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper to call the U.S. Census data API&quot;&quot;&quot;</span>
 
-    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># The API key</span>
+    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># The optional API key</span>
     <span class="n">user_agent</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;dartfx-uscensus/</span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">_session</span><span class="p">:</span> <span class="n">CachedSession</span>
 
@@ -164,12 +164,13 @@
             
 <div class="viewcode-block" id="UsCensusApi.get_request">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusApi.get_request">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the API using the GET method.&quot;&quot;&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">description</span><span class="p">:</span>
             <span class="n">description</span> <span class="o">=</span> <span class="n">_get_caller_name</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
-            <span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span></div>
 
 
@@ -181,13 +182,13 @@
             <span class="n">description</span> <span class="o">=</span> <span class="n">_get_caller_name</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
             <span class="s2">&quot;post&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>     </div>
 
-      
 
 <div class="viewcode-block" id="UsCensusApi.get_dcat_json">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusApi.get_dcat_json">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_dcat_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the data catalog as a JSON object.&quot;&quot;&quot;</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="s1">&#39;data.json&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
@@ -195,6 +196,7 @@
 <div class="viewcode-block" id="UsCensusApi.get_dcat_xml">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusApi.get_dcat_xml">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_dcat_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the data catalog as an XML object.&quot;&quot;&quot;</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="s1">&#39;data.xml&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 </div>
@@ -232,36 +234,64 @@
             <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_datasets</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;c_isAggregate&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">instance</span> <span class="o">=</span> <span class="n">UsCensusAggregatedDataset</span><span class="p">(</span><span class="n">api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">instance</span>
                 <span class="k">elif</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;c_isMicrodata&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">instance</span> <span class="o">=</span> <span class="n">UsCensusMicrodataDataset</span><span class="p">(</span><span class="n">api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">instance</span>
                 <span class="k">elif</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;c_isTimeseries&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">instance</span> <span class="o">=</span> <span class="n">UsCensusTimeSeriesDataset</span><span class="p">(</span><span class="n">api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">instance</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown dataset type: </span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;identifier&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span>
-                
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;n_datasets&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;n_aggregate&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;n_aggregate_cube&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;n_microdata&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;n_microdata_cube&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;n_timeseries&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;n_datasets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">)</span>        
         <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isAggregate</span><span class="p">:</span>
                 <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;n_aggregate&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">elif</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isMicrodata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isAggregate</span> <span class="ow">and</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isCube</span><span class="p">:</span>
+                <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;n_aggregate_cube&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isMicrodata</span><span class="p">:</span>
                 <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;n_microdata&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">elif</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isTimeseries</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isMicrodata</span> <span class="ow">and</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isCube</span><span class="p">:</span>
+                <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;n_microdata_cube&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isTimeseries</span><span class="p">:</span>
                 <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;n_timeseries&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">stats</span></div>
+        <span class="k">return</span> <span class="n">stats</span>
 
-                
+<div class="viewcode-block" id="UsCensusCatalog.search_datasets">
+<a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusCatalog.search_datasets">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">search_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_aggregate</span><span class="p">:</span> <span class="nb">bool</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_cube</span><span class="p">:</span> <span class="nb">bool</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_microdata</span><span class="p">:</span> <span class="nb">bool</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;UsCensusDataset&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search for datasets.&quot;&quot;&quot;</span>
+        <span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">is_aggregate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isAggregate</span> <span class="o">!=</span> <span class="n">is_aggregate</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">is_cube</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isCube</span> <span class="o">!=</span> <span class="n">is_cube</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">is_microdata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isMicrodata</span> <span class="o">!=</span> <span class="n">is_microdata</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datasets</span></div>
+
+
+<div class="viewcode-block" id="UsCensusCatalog.get_dataset">
+<a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusCatalog.get_dataset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UsCensusDataset&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="n">dataset_id</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span></div>
+</div>
+
+    
 <div class="viewcode-block" id="UsCensusDataset">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UsCensusDataset</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -297,6 +327,11 @@
     <span class="n">spatial</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">temporal</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">publisher</span><span class="p">:</span> <span class="nb">dict</span>
+    
+
+    <span class="nd">@computed_field</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
     
 <div class="viewcode-block" id="UsCensusDataset.Geography">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.Geography">[docs]</a>

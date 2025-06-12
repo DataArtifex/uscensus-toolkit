@@ -68,9 +68,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusCatalog"><code class="docutils literal notranslate"><span class="pre">UsCensusCatalog</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusCatalog.api"><code class="docutils literal notranslate"><span class="pre">UsCensusCatalog.api</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusCatalog.datasets"><code class="docutils literal notranslate"><span class="pre">UsCensusCatalog.datasets</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusCatalog.get_dataset"><code class="docutils literal notranslate"><span class="pre">UsCensusCatalog.get_dataset()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusCatalog.model_config"><code class="docutils literal notranslate"><span class="pre">UsCensusCatalog.model_config</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusCatalog.model_post_init"><code class="docutils literal notranslate"><span class="pre">UsCensusCatalog.model_post_init()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusCatalog.refresh"><code class="docutils literal notranslate"><span class="pre">UsCensusCatalog.refresh()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusCatalog.search_datasets"><code class="docutils literal notranslate"><span class="pre">UsCensusCatalog.search_datasets()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusCatalog.stats"><code class="docutils literal notranslate"><span class="pre">UsCensusCatalog.stats</span></code></a></li>
 </ul>
 </li>
@@ -131,6 +133,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusDataset.model_config"><code class="docutils literal notranslate"><span class="pre">UsCensusDataset.model_config</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusDataset.model_post_init"><code class="docutils literal notranslate"><span class="pre">UsCensusDataset.model_post_init()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusDataset.modified"><code class="docutils literal notranslate"><span class="pre">UsCensusDataset.modified</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusDataset.name"><code class="docutils literal notranslate"><span class="pre">UsCensusDataset.name</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusDataset.programCode"><code class="docutils literal notranslate"><span class="pre">UsCensusDataset.programCode</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusDataset.publisher"><code class="docutils literal notranslate"><span class="pre">UsCensusDataset.publisher</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusDataset.references"><code class="docutils literal notranslate"><span class="pre">UsCensusDataset.references</span></code></a></li>
@@ -222,16 +225,18 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="dartfx.uscensus.uscensus.UsCensusApi.get_dcat_json">
 <span class="sig-name descname"><span class="pre">get_dcat_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/dartfx/uscensus/uscensus.html#UsCensusApi.get_dcat_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dartfx.uscensus.uscensus.UsCensusApi.get_dcat_json" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the data catalog as a JSON object.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dartfx.uscensus.uscensus.UsCensusApi.get_dcat_xml">
 <span class="sig-name descname"><span class="pre">get_dcat_xml</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Element</span></span></span><a class="reference internal" href="_modules/dartfx/uscensus/uscensus.html#UsCensusApi.get_dcat_xml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dartfx.uscensus.uscensus.UsCensusApi.get_dcat_xml" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the data catalog as an XML object.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dartfx.uscensus.uscensus.UsCensusApi.get_request">
-<span class="sig-name descname"><span class="pre">get_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dartfx/uscensus/uscensus.html#UsCensusApi.get_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dartfx.uscensus.uscensus.UsCensusApi.get_request" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dartfx/uscensus/uscensus.html#UsCensusApi.get_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dartfx.uscensus.uscensus.UsCensusApi.get_request" title="Link to this definition"></a></dt>
 <dd><p>Call the API using the GET method.</p>
 </dd></dl>
 
@@ -296,6 +301,11 @@
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">datasets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusDataset" title="dartfx.uscensus.uscensus.UsCensusDataset"><span class="pre">UsCensusDataset</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dartfx.uscensus.uscensus.UsCensusCatalog.datasets" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="dartfx.uscensus.uscensus.UsCensusCatalog.get_dataset">
+<span class="sig-name descname"><span class="pre">get_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusDataset" title="dartfx.uscensus.uscensus.UsCensusDataset"><span class="pre">UsCensusDataset</span></a></span></span><a class="reference internal" href="_modules/dartfx/uscensus/uscensus.html#UsCensusCatalog.get_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dartfx.uscensus.uscensus.UsCensusCatalog.get_dataset" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dartfx.uscensus.uscensus.UsCensusCatalog.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#dartfx.uscensus.uscensus.UsCensusCatalog.model_config" title="Link to this definition"></a></dt>
@@ -321,6 +331,12 @@
 <dt class="sig sig-object py" id="dartfx.uscensus.uscensus.UsCensusCatalog.refresh">
 <span class="sig-name descname"><span class="pre">refresh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dartfx/uscensus/uscensus.html#UsCensusCatalog.refresh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dartfx.uscensus.uscensus.UsCensusCatalog.refresh" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dartfx.uscensus.uscensus.UsCensusCatalog.search_datasets">
+<span class="sig-name descname"><span class="pre">search_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_aggregate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_cube</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_microdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dartfx.uscensus.uscensus.UsCensusDataset" title="dartfx.uscensus.uscensus.UsCensusDataset"><span class="pre">UsCensusDataset</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/dartfx/uscensus/uscensus.html#UsCensusCatalog.search_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dartfx.uscensus.uscensus.UsCensusCatalog.search_datasets" title="Link to this definition"></a></dt>
+<dd><p>Search for datasets.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="dartfx.uscensus.uscensus.UsCensusCatalog.stats">
@@ -688,6 +704,11 @@ and developers can use the one they like….</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dartfx.uscensus.uscensus.UsCensusDataset.modified">
 <span class="sig-name descname"><span class="pre">modified</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dartfx.uscensus.uscensus.UsCensusDataset.modified" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dartfx.uscensus.uscensus.UsCensusDataset.name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dartfx.uscensus.uscensus.UsCensusDataset.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
