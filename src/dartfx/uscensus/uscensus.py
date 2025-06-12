@@ -5,7 +5,7 @@ import logging
 import mlcroissant as mlc
 from typing import Optional
 from .__about__ import __version__
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 from requests_cache import CachedSession
 import xml.etree.ElementTree as ET
 from xml.sax.saxutils import escape
@@ -40,7 +40,7 @@ class UsCensusApiError(Exception):
 class UsCensusApi(BaseModel):
     """Helper to call the U.S. Census data API"""
 
-    api_key: str | None = None  # The API key
+    api_key: str | None = None  # The optional API key
     user_agent: str = f"dartfx-uscensus/{__version__}"
     _session: CachedSession
 
@@ -80,12 +80,13 @@ class UsCensusApi(BaseModel):
             logging.error(response.text)
             raise UsCensusApiError(description, path, response.status_code, response)
             
-    def get_request(self, path, description=None, headers={}, **kwargs):
+    def get_request(self, path, description=None, headers=None, **kwargs):
         """Call the API using the GET method."""
+        headers = headers or {}
         if not description:
             description = _get_caller_name()
         return self.request(
-            "get", path, description, headers={}, **kwargs
+            "get", path, description, headers=headers, **kwargs
         )
 
     def post_request(self, path, description=None, **kwargs):
@@ -94,14 +95,15 @@ class UsCensusApi(BaseModel):
             description = _get_caller_name()
         return self.request(
             "post", path, description, **kwargs
-        )
-      
+        )     
 
     def get_dcat_json(self) -> dict:
+        """Returns the data catalog as a JSON object."""
         response = self.get_request('data.json')
         return response.json()
     
     def get_dcat_xml(self) -> ET.Element:
+        """Returns the data catalog as an XML object."""
         response = self.get_request('data.xml')
         return ET.fromstring(response.text)
 
@@ -132,35 +134,57 @@ class UsCensusCatalog(BaseModel):
             for dataset in self._get_datasets():
                 if dataset.get("c_isAggregate", False):
                     instance = UsCensusAggregatedDataset(api=self.api, **dataset)
-                    self._datasets[instance.id] = instance
+                    self._datasets[instance.id.lower()] = instance
                 elif dataset.get("c_isMicrodata", False):
                     instance = UsCensusMicrodataDataset(api=self.api, **dataset)
-                    self._datasets[instance.id] = instance
+                    self._datasets[instance.id.lower()] = instance
                 elif dataset.get("c_isTimeseries", False):
                     instance = UsCensusTimeSeriesDataset(api=self.api, **dataset)
-                    self._datasets[instance.id] = instance
+                    self._datasets[instance.id.lower()] = instance
                 else:
                     raise ValueError(f"Unknown dataset type: {dataset.get('identifier')}")
         return self._datasets
-                
+
     @property
     def stats(self):
         stats = {
             "n_datasets": 0,
             "n_aggregate": 0,
+            "n_aggregate_cube": 0,
             "n_microdata": 0,
+            "n_microdata_cube": 0,
             "n_timeseries": 0,
         }
         stats["n_datasets"] = len(self.datasets)        
         for dataset in self.datasets.values():
             if dataset.c_isAggregate:
                 stats["n_aggregate"] += 1
-            elif dataset.c_isMicrodata:
+            if dataset.c_isAggregate and dataset.c_isCube:
+                stats["n_aggregate_cube"] += 1
+            if dataset.c_isMicrodata:
                 stats["n_microdata"] += 1
-            elif dataset.c_isTimeseries:
+            if dataset.c_isMicrodata and dataset.c_isCube:
+                stats["n_microdata_cube"] += 1
+            if dataset.c_isTimeseries:
                 stats["n_timeseries"] += 1
         return stats
-                
+
+    def search_datasets(self, is_aggregate: bool|None = None, is_cube: bool|None = None, is_microdata: bool|None = None) -> list["UsCensusDataset"]:
+        """Search for datasets."""
+        datasets = []
+        for dataset in self.datasets.values():
+            if is_aggregate is not None and dataset.c_isAggregate != is_aggregate:
+                continue
+            if is_cube is not None and dataset.c_isCube != is_cube:
+                continue
+            if is_microdata is not None and dataset.c_isMicrodata != is_microdata:
+                continue
+            datasets.append(dataset)
+        return datasets
+
+    def get_dataset(self, dataset_id: str) -> "UsCensusDataset":
+        return self.datasets[dataset_id.lower()]
+    
 class UsCensusDataset(BaseModel):
     api: UsCensusApi
     
@@ -194,6 +218,11 @@ class UsCensusDataset(BaseModel):
     spatial: str | None = None
     temporal: str | None = None
     publisher: dict
+    
+
+    @computed_field
+    def name(self) -> str:
+        return self.title
     
     class Geography(BaseModel): 
         
