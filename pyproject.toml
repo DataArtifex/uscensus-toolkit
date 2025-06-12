@@ -50,7 +50,8 @@ path = "src/dartfx/uscensus/__about__.py"
 dependencies = [
   "coverage[toml]>=6.5",
   "pytest",
-  "lxml>=5.0.0" # for XML validation
+  "lxml>=5.0.0",
+  "python-dotenv>=1.0.0"
 ]
 
 [tool.hatch.envs.default.scripts]
