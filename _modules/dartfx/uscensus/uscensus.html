@@ -7,15 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dartfx.uscensus.uscensus &mdash; Data Artifex U.S. Census Toolkit 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=01f34227"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -72,17 +72,19 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dartfx.uscensus.uscensus</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xml.sax.saxutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">escape</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">mlcroissant</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mlc</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.__about__</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">computed_field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">requests_cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">CachedSession</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">xml.sax.saxutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">escape</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.__about__</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_caller_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the name of the function that called the current function.&quot;&quot;&quot;</span>
@@ -92,7 +94,8 @@
         <span class="k">return</span> <span class="n">caller_frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="c1"># Clean up to avoid reference cycles</span>
-        <span class="k">del</span> <span class="n">frame</span>     
+        <span class="k">del</span> <span class="n">frame</span>
+
 
 <div class="viewcode-block" id="UsCensusApiError">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusApiError">[docs]</a>
@@ -114,6 +117,7 @@
         <span class="k">return</span> <span class="n">base_message</span></div>
 
 
+
 <div class="viewcode-block" id="UsCensusApi">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusApi">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UsCensusApi</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -123,34 +127,31 @@
     <span class="n">user_agent</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;dartfx-uscensus/</span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">_session</span><span class="p">:</span> <span class="n">CachedSession</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CachedSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">CachedSession</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># Call Pydantic&#39;s __init__ FIRST</span>
         <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">CachedSession</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>  <span class="c1"># create an in-memory session</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
         <span class="c1"># set a 24h cache expiration for api.census.gov</span>
-        <span class="k">if</span> <span class="s1">&#39;api.census.gov&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">urls_expire_after</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">urls_expire_after</span><span class="p">[</span><span class="s1">&#39;api.census.gov&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span>
+        <span class="k">if</span> <span class="s2">&quot;api.census.gov&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">urls_expire_after</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">urls_expire_after</span><span class="p">[</span><span class="s2">&quot;api.census.gov&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span>
 
 <div class="viewcode-block" id="UsCensusApi.request">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusApi.request">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/json&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the API.&quot;&quot;&quot;</span>
         <span class="c1"># prepare headers</span>
-        <span class="n">default_headers</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="n">content_type</span><span class="p">,</span>
-            <span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_agent</span>
-        <span class="p">}</span>
-        <span class="k">if</span> <span class="s1">&#39;headers&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_headers</span> <span class="o">|</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]</span>
+        <span class="n">default_headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="n">content_type</span><span class="p">,</span> <span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_agent</span><span class="p">}</span>
+        <span class="k">if</span> <span class="s2">&quot;headers&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;headers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;headers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_headers</span> <span class="o">|</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;headers&quot;</span><span class="p">]</span>
         <span class="c1"># prepare call</span>
         <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://api.census.gov/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;params&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="s2">&quot;params&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">:</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="s1">&#39;key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span>
         <span class="c1"># call the API</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># handle response</span>
@@ -161,7 +162,7 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">UsCensusApiError</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span></div>
 
-            
+
 <div class="viewcode-block" id="UsCensusApi.get_request">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusApi.get_request">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -169,9 +170,7 @@
         <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">description</span><span class="p">:</span>
             <span class="n">description</span> <span class="o">=</span> <span class="n">_get_caller_name</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
-            <span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UsCensusApi.post_request">
@@ -180,26 +179,25 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the API using the POST method.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">description</span><span class="p">:</span>
             <span class="n">description</span> <span class="o">=</span> <span class="n">_get_caller_name</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
-            <span class="s2">&quot;post&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span>     </div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;post&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UsCensusApi.get_dcat_json">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusApi.get_dcat_json">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_dcat_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the data catalog as a JSON object.&quot;&quot;&quot;</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="s1">&#39;data.json&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="s2">&quot;data.json&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
-    
+
 <div class="viewcode-block" id="UsCensusApi.get_dcat_xml">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusApi.get_dcat_xml">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_dcat_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the data catalog as an XML object.&quot;&quot;&quot;</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="s1">&#39;data.xml&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">(</span><span class="s2">&quot;data.xml&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 </div>
+
 
 
 <div class="viewcode-block" id="UsCensusCatalog">
@@ -207,17 +205,17 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UsCensusCatalog</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span>
     <span class="n">_datasets</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;UsCensusDataset&quot;</span><span class="p">]</span>
-    
+
     <span class="n">api</span><span class="p">:</span> <span class="n">UsCensusApi</span>
-    
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api</span><span class="p">:</span> <span class="n">UsCensusApi</span> <span class="p">,</span> <span class="n">load_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api</span><span class="p">:</span> <span class="n">UsCensusApi</span><span class="p">,</span> <span class="n">load_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">api</span><span class="o">=</span><span class="n">api</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># Call Pydantic&#39;s __init__ FIRST</span>
         <span class="k">if</span> <span class="n">load_data</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span> <span class="o">=</span> <span class="p">{}</span>
-        
+
 <div class="viewcode-block" id="UsCensusCatalog.refresh">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusCatalog.refresh">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -226,10 +224,10 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dataset&quot;</span><span class="p">,[])</span>
-    
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="s2">&quot;UsCensusDataset&quot;</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;UsCensusDataset&quot;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_datasets</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;c_isAggregate&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
@@ -255,7 +253,7 @@
             <span class="s2">&quot;n_microdata_cube&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;n_timeseries&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;n_datasets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">)</span>        
+        <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;n_datasets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">c_isAggregate</span><span class="p">:</span>
                 <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;n_aggregate&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -271,7 +269,9 @@
 
 <div class="viewcode-block" id="UsCensusCatalog.search_datasets">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusCatalog.search_datasets">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">search_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_aggregate</span><span class="p">:</span> <span class="nb">bool</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_cube</span><span class="p">:</span> <span class="nb">bool</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_microdata</span><span class="p">:</span> <span class="nb">bool</span><span class="o">|</span><span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;UsCensusDataset&quot;</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">search_datasets</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">is_aggregate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_cube</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_microdata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;UsCensusDataset&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Search for datasets.&quot;&quot;&quot;</span>
         <span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -291,12 +291,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="n">dataset_id</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span></div>
 </div>
 
-    
+
+
 <div class="viewcode-block" id="UsCensusDataset">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UsCensusDataset</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">api</span><span class="p">:</span> <span class="n">UsCensusApi</span>
-    
+
     <span class="n">c_dataset</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">c_vintage</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">c_geographyLink</span><span class="p">:</span> <span class="nb">str</span>
@@ -327,16 +328,14 @@
     <span class="n">spatial</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">temporal</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">publisher</span><span class="p">:</span> <span class="nb">dict</span>
-    
 
     <span class="nd">@computed_field</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span>
-    
+
 <div class="viewcode-block" id="UsCensusDataset.Geography">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.Geography">[docs]</a>
-    <span class="k">class</span><span class="w"> </span><span class="nc">Geography</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span> 
-        
+    <span class="k">class</span><span class="w"> </span><span class="nc">Geography</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <div class="viewcode-block" id="UsCensusDataset.Geography.Fips">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.Geography.Fips">[docs]</a>
         <span class="k">class</span><span class="w"> </span><span class="nc">Fips</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -345,20 +344,17 @@
             <span class="n">referenceDate</span><span class="p">:</span> <span class="nb">str</span>
             <span class="n">requires</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-        
-        <span class="n">default</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
-        <span class="n">fips</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Fips</span><span class="p">]</span> </div>
 
-        
-    
+        <span class="n">default</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
+        <span class="n">fips</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Fips</span><span class="p">]</span></div>
+
+
 <div class="viewcode-block" id="UsCensusDataset.Variable">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.Variable">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Variable</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-        
 <div class="viewcode-block" id="UsCensusDataset.Variable.Values">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.Variable.Values">[docs]</a>
         <span class="k">class</span><span class="w"> </span><span class="nc">Values</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-            
 <div class="viewcode-block" id="UsCensusDataset.Variable.Values.Range">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.Variable.Values.Range">[docs]</a>
             <span class="k">class</span><span class="w"> </span><span class="nc">Range</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -366,11 +362,11 @@
                 <span class="nb">max</span><span class="p">:</span> <span class="nb">str</span>
                 <span class="n">description</span><span class="p">:</span> <span class="nb">str</span></div>
 
-                
-            <span class="n">item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">item</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="nb">range</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Range</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-                
+
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
         <span class="n">label</span><span class="p">:</span> <span class="nb">str</span>
         <span class="n">concept</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -381,37 +377,34 @@
         <span class="n">suggested_weight</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;suggested-weight&quot;</span><span class="p">)</span>
         <span class="n">values</span><span class="p">:</span> <span class="n">Values</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">predicateOnly</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-        
+
         <span class="nd">@property</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">codelist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">item</span>
 
         <span class="nd">@property</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">croissant_data_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="c1"># https://dev.socrata.com/docs/datatypes</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">mlc</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">INTEGER</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span> <span class="s2">&quot;string&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">mlc</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">TEXT</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span> <span class="s1">&#39;fips-for&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span> <span class="s2">&quot;fips-for&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">mlc</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">TEXT</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span><span class="s1">&#39;fips-in&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span> <span class="s2">&quot;fips-in&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">mlc</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">TEXT</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span><span class="s1">&#39;ucgid&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span> <span class="s2">&quot;ucgid&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">mlc</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">TEXT</span>
             <span class="k">return</span> <span class="n">mlc</span><span class="o">.</span><span class="n">DataType</span><span class="o">.</span><span class="n">TEXT</span></div>
 
-            
+
     <span class="n">_geography</span><span class="p">:</span> <span class="n">Geography</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Variable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    
-<div class="viewcode-block" id="UsCensusDataset.id">
-<a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.id">[docs]</a>
+
     <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
-
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -421,7 +414,7 @@
             <span class="s2">&quot;n_codelists&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;n_ranges&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;types&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;none&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
-            <span class="s2">&quot;weights&quot;</span><span class="p">:</span> <span class="p">{}</span>
+            <span class="s2">&quot;weights&quot;</span><span class="p">:</span> <span class="p">{},</span>
         <span class="p">}</span>
         <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">concept</span><span class="p">:</span>
@@ -435,7 +428,7 @@
                 <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">predicateType</span> <span class="ow">in</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;types&quot;</span><span class="p">]:</span>
                     <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;types&quot;</span><span class="p">][</span><span class="n">variable</span><span class="o">.</span><span class="n">predicateType</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;types&quot;</span><span class="p">][</span><span class="n">variable</span><span class="o">.</span><span class="n">predicateType</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>                
+                    <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;types&quot;</span><span class="p">][</span><span class="n">variable</span><span class="o">.</span><span class="n">predicateType</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;types&quot;</span><span class="p">][</span><span class="s2">&quot;none&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">suggested_weight</span><span class="p">:</span>
@@ -466,7 +459,7 @@
             <span class="c1"># http://api.census.gov/data/2023/acs/acs1/pums/variables.json</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_variables</span><span class="p">()</span>
-            <span class="n">json_variables</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;variables&quot;</span><span class="p">,</span> <span class="p">{})</span> 
+            <span class="n">json_variables</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;variables&quot;</span><span class="p">,</span> <span class="p">{})</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">variable_data</span> <span class="ow">in</span> <span class="n">json_variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">variable_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span>
@@ -475,11 +468,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve geography.json file from server&quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_geographyLink</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">data</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve variables.json file from server&quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_variablesLink</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">data</span>     
+        <span class="k">return</span> <span class="n">data</span>
 
 <div class="viewcode-block" id="UsCensusDataset.get_croissant">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.get_croissant">[docs]</a>
@@ -490,42 +483,45 @@
         <span class="n">publishers</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">publisher</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="p">:</span>
             <span class="n">publishers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mlc</span><span class="o">.</span><span class="n">Organization</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">publisher</span><span class="p">))</span>
-        <span class="n">metadata</span> <span class="o">=</span> <span class="n">mlc</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="n">ctx</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> 
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">mlc</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
+            <span class="n">ctx</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-            <span class="n">cite_as</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="n">date_modified</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modified</span><span class="p">,</span>
-            <span class="n">license</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">license</span><span class="p">,</span>
-            <span class="n">publisher</span><span class="o">=</span><span class="n">publishers</span>
+            <span class="n">cite_as</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">date_modified</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modified</span><span class="p">,</span>
+            <span class="n">license</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">license</span><span class="p">,</span>
+            <span class="n">publisher</span><span class="o">=</span><span class="n">publishers</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># distribution</span>
         <span class="n">distribution</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">content_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">access_url</span>
-        <span class="c1">#content_url += f&quot;?get={&#39;,&#39;.join(self.variables.keys())}&quot;</span>
-        <span class="c1">#content_url += &quot;&amp;for=state:10&quot; # delaware FIPS code</span>
-        <span class="c1">#if not include_computed:</span>
+        <span class="c1"># content_url += f&quot;?get={&#39;,&#39;.join(self.variables.keys())}&quot;</span>
+        <span class="c1"># content_url += &quot;&amp;for=state:10&quot; # delaware FIPS code</span>
+        <span class="c1"># if not include_computed:</span>
         <span class="c1">#    content_url += f&#39;?$select={&quot;,&quot;.join(selected_variables_names)}&#39;</span>
-        <span class="n">fileobject</span> <span class="o">=</span> <span class="n">mlc</span><span class="o">.</span><span class="n">FileObject</span><span class="p">(</span><span class="n">ctx</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> 
-            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">+</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">+</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span>
+        <span class="n">fileobject</span> <span class="o">=</span> <span class="n">mlc</span><span class="o">.</span><span class="n">FileObject</span><span class="p">(</span>
+            <span class="n">ctx</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span><span class="p">,</span>
             <span class="n">content_url</span><span class="o">=</span><span class="n">content_url</span><span class="p">,</span>
-            <span class="n">encoding_format</span><span class="o">=</span><span class="n">mlc</span><span class="o">.</span><span class="n">EncodingFormat</span><span class="o">.</span><span class="n">JSON</span>
+            <span class="n">encoding_format</span><span class="o">=</span><span class="n">mlc</span><span class="o">.</span><span class="n">EncodingFormat</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">distribution</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileobject</span><span class="p">)</span>
         <span class="n">metadata</span><span class="o">.</span><span class="n">distribution</span> <span class="o">=</span> <span class="n">distribution</span>
         <span class="c1"># fields and record set</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">field</span> <span class="o">=</span> <span class="n">mlc</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">ctx</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="k">for</span> <span class="n">_name</span><span class="p">,</span> <span class="n">variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="n">mlc</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+                <span class="n">ctx</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
                 <span class="nb">id</span><span class="o">=</span><span class="n">variable</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">variable</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">description</span><span class="o">=</span><span class="n">variable</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
-                <span class="n">source</span><span class="o">=</span><span class="n">mlc</span><span class="o">.</span><span class="n">Source</span><span class="p">(</span><span class="n">file_object</span><span class="o">=</span><span class="n">fileobject</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">extract</span><span class="o">=</span><span class="n">mlc</span><span class="o">.</span><span class="n">Extract</span><span class="p">(</span><span class="n">ctx</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">variable</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                <span class="n">source</span><span class="o">=</span><span class="n">mlc</span><span class="o">.</span><span class="n">Source</span><span class="p">(</span><span class="n">file_object</span><span class="o">=</span><span class="n">fileobject</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">extract</span><span class="o">=</span><span class="n">mlc</span><span class="o">.</span><span class="n">Extract</span><span class="p">(</span><span class="n">ctx</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">variable</span><span class="o">.</span><span class="n">name</span><span class="p">)),</span>
             <span class="p">)</span>
             <span class="n">field</span><span class="o">.</span><span class="n">data_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">croissant_data_type</span><span class="p">)</span>
             <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
-        <span class="n">record_set</span> <span class="o">=</span> <span class="n">mlc</span><span class="o">.</span><span class="n">RecordSet</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">)</span> 
+        <span class="n">record_set</span> <span class="o">=</span> <span class="n">mlc</span><span class="o">.</span><span class="n">RecordSet</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">)</span>
         <span class="n">record_sets</span> <span class="o">=</span> <span class="p">[</span><span class="n">record_set</span><span class="p">]</span>
         <span class="n">metadata</span><span class="o">.</span><span class="n">record_sets</span> <span class="o">=</span> <span class="n">record_sets</span>
         <span class="k">return</span> <span class="n">metadata</span></div>
@@ -542,9 +538,9 @@
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusDataset.get_ddi_codebook">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_ddi_codebook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codebook_version</span><span class="o">=</span><span class="s2">&quot;2.5&quot;</span><span class="p">,</span> <span class="n">include_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate DDI-Codebook XML for this dataset.</span>
-<span class="sd">        </span>
+
 <span class="sd">        This generates an XML string so we do not have a dependency on XML packages</span>
-<span class="sd">        and developers can use the one they like....        </span>
+<span class="sd">        and developers can use the one they like....</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The DDI-Codebook XML</span>
@@ -555,51 +551,51 @@
         <span class="n">xml</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;codeBook ID=&quot;</span><span class="si">{</span><span class="n">uid</span><span class="si">}</span><span class="s1">&quot; ddiCodebookUrn=&quot;</span><span class="si">{</span><span class="n">urn</span><span class="si">}</span><span class="s1">&quot; version=&quot;</span><span class="si">{</span><span class="n">codebook_version</span><span class="si">}</span><span class="s1">&quot; xmlns=&quot;ddi:codebook:</span><span class="si">{</span><span class="n">codebook_version</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
         <span class="k">if</span> <span class="n">include_schema</span><span class="p">:</span>
             <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;ddi:codebook:2_5 https://ddialliance.org/hubfs/Specification/DDI-Codebook/2.5/XMLSchema/codebook.xsd&quot;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&gt;&#39;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&gt;&quot;</span>
         <span class="c1"># docDscr</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;docDscr&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;citation&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;titlStmt&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;titl&gt;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/titl&gt;&#39;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;docDscr&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;citation&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;titlStmt&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;titl&gt;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/titl&gt;&quot;</span>
         <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;IDNo agency=&quot;census.gov&quot;&gt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&lt;/IDNo&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/titlStmt&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;prodStmt&gt;&#39;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/titlStmt&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;prodStmt&gt;&quot;</span>
         <span class="n">prodDate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()[:</span><span class="o">-</span><span class="mi">7</span><span class="p">]</span>
         <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;prodDate date=&quot;</span><span class="si">{</span><span class="n">prodDate</span><span class="si">}</span><span class="s1">&quot;&gt;</span><span class="si">{</span><span class="n">prodDate</span><span class="si">}</span><span class="s1">&lt;/prodDate&gt;&#39;</span>
         <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;software version=&quot;</span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s1">&quot;&gt;Data Artifex - U.S. Census (darfx-uscensus)&lt;/software&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/prodStmt&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/citation&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/docDscr&gt;&#39;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/prodStmt&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/citation&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/docDscr&gt;&quot;</span>
         <span class="c1"># stdyDscr</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;stdyDscr&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;citation&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;titlStmt&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;titl&gt;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/titl&gt;&#39;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;stdyDscr&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;citation&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;titlStmt&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;titl&gt;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/titl&gt;&quot;</span>
         <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;IDNo agency=&quot;census.gov&quot;&gt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&lt;/IDNo&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/titlStmt&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;prodStmt&gt;&#39;</span>
-        <span class="c1">#xml += &#39;&lt;software&gt;Socrata&lt;/software&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/prodStmt&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/citation&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;stdyInfo&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;abstract&gt;&lt;![CDATA[</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span><span class="si">}</span><span class="s1">]]&gt;&lt;/abstract&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/stdyInfo&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/stdyDscr&gt;&#39;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/titlStmt&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;prodStmt&gt;&quot;</span>
+        <span class="c1"># xml += &#39;&lt;software&gt;Socrata&lt;/software&gt;&#39;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/prodStmt&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/citation&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;stdyInfo&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;abstract&gt;&lt;![CDATA[</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span><span class="si">}</span><span class="s2">]]&gt;&lt;/abstract&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/stdyInfo&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/stdyDscr&gt;&quot;</span>
         <span class="c1"># fileDscr</span>
         <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;fileDscr ID=&quot;F1&quot;&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;fileTxt&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;fileName&gt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&lt;/fileName&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;dimensns&gt;&#39;</span>
-        <span class="c1">#xml += f&#39;&lt;caseQnty&gt;{self.get_record_count()}&lt;/caseQnty&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;varQnty&gt;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/varQnty&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/dimensns&gt;&#39;</span>
-        <span class="c1">#xml += &#39;&lt;fileType&gt;socrata&lt;/fileType&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/fileTxt&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/fileDscr&gt;&#39;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;fileTxt&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;fileName&gt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&lt;/fileName&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;dimensns&gt;&quot;</span>
+        <span class="c1"># xml += f&#39;&lt;caseQnty&gt;{self.get_record_count()}&lt;/caseQnty&gt;&#39;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;varQnty&gt;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/varQnty&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/dimensns&gt;&quot;</span>
+        <span class="c1"># xml += &#39;&lt;fileType&gt;socrata&lt;/fileType&gt;&#39;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/fileTxt&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/fileDscr&gt;&quot;</span>
         <span class="c1"># dataDscr</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;dataDscr&gt;&#39;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;dataDscr&gt;&quot;</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">predicateOnly</span><span class="p">:</span> <span class="c1"># skip API predicates</span>
+            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">predicateOnly</span><span class="p">:</span>  <span class="c1"># skip API predicates</span>
                 <span class="k">continue</span>
             <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;var ID=&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; name=&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; files=&quot;F1&quot;&#39;</span>
             <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">is_weight</span><span class="p">:</span>
@@ -607,37 +603,41 @@
             <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">suggested_weight</span><span class="p">:</span>
                 <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; wgt-var=&quot;</span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">suggested_weight</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
                 <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; weight=&quot;</span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">suggested_weight</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
-            <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&gt;&#39;</span>
-            <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;labl&gt;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">label</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/labl&gt;&#39;</span>
-            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span> <span class="s1">&#39;int&#39;</span><span class="p">:</span>
-                <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;numeric&#39;</span>
+            <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&gt;&quot;</span>
+            <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;labl&gt;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">label</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/labl&gt;&quot;</span>
+            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">predicateType</span> <span class="o">==</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;numeric&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;character&#39;</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;character&quot;</span>
             <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">values</span> <span class="ow">and</span> <span class="n">var</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">range</span><span class="p">:</span>
                 <span class="k">for</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">range</span><span class="p">:</span>
-                    <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;valrng&gt;&#39;</span>
+                    <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;valrng&gt;&quot;</span>
                     <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;range min=&quot;</span><span class="si">{</span><span class="nb">range</span><span class="o">.</span><span class="n">min</span><span class="si">}</span><span class="s1">&quot; max=&quot;</span><span class="si">{</span><span class="nb">range</span><span class="o">.</span><span class="n">max</span><span class="si">}</span><span class="s1">&quot;/&gt;&#39;</span>
                     <span class="k">if</span> <span class="nb">range</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
                         <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;notes type=&quot;darfx&quot; subject=&quot;description&quot;&gt;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="nb">range</span><span class="o">.</span><span class="n">description</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/notes&gt;&#39;</span>
-                    <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/valrng&gt;&#39;</span>                
+                    <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/valrng&gt;&quot;</span>
             <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">codelist</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">value</span><span class="p">,</span><span class="n">label</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">codelist</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;catgry&gt;&#39;</span>
-                    <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;catValu&gt;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/catValu&gt;&#39;</span>
-                    <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;labl&gt;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/labl&gt;&#39;</span>
-                    <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/catgry&gt;&#39;</span>                    
-            <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;varFormat type=&quot;</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s1">&quot; schema=&quot;other&quot; formatname=&quot;uscensus&quot;&gt;</span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">predicateType</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="si">}</span><span class="s1">&lt;/varFormat&gt;&#39;</span>
-            <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/var&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/dataDscr&gt;&#39;</span>
-        <span class="n">xml</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/codeBook&gt;&#39;</span>
+                <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">codelist</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;catgry&gt;&quot;</span>
+                    <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;catValu&gt;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/catValu&gt;&quot;</span>
+                    <span class="n">xml</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;labl&gt;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="n">label</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/labl&gt;&quot;</span>
+                    <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/catgry&gt;&quot;</span>
+            <span class="n">xml</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;&lt;varFormat type=&quot;</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s1">&quot; schema=&quot;other&quot; formatname=&quot;uscensus&quot;&gt;</span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">predicateType</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="si">}</span><span class="s1">&lt;/varFormat&gt;&#39;</span>
+            <span class="p">)</span>
+            <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/var&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/dataDscr&gt;&quot;</span>
+        <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/codeBook&gt;&quot;</span>
         <span class="k">return</span> <span class="n">xml</span></div>
 </div>
 
-            
+
+
 <div class="viewcode-block" id="UsCensusAggregatedDataset">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusAggregatedDataset">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UsCensusAggregatedDataset</span><span class="p">(</span><span class="n">UsCensusDataset</span><span class="p">):</span>
     <span class="k">pass</span></div>
+
 
 
 <div class="viewcode-block" id="UsCensusTimeSeriesDataset">
@@ -646,11 +646,11 @@
     <span class="k">pass</span></div>
 
 
+
 <div class="viewcode-block" id="UsCensusMicrodataDataset">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusMicrodataDataset">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UsCensusMicrodataDataset</span><span class="p">(</span><span class="n">UsCensusDataset</span><span class="p">):</span>
     <span class="k">pass</span></div>
-
 
 </pre></div>
 
