@@ -135,15 +135,13 @@ class UsCensusCatalog(BaseModel):
                 instance: UsCensusDataset
                 if dataset.get("c_isAggregate", False):
                     instance = UsCensusAggregatedDataset(api=self.api, **dataset)
-                    self._datasets[instance.id.lower()] = instance
                 elif dataset.get("c_isMicrodata", False):
                     instance = UsCensusMicrodataDataset(api=self.api, **dataset)
-                    self._datasets[instance.id.lower()] = instance
                 elif dataset.get("c_isTimeseries", False):
                     instance = UsCensusTimeSeriesDataset(api=self.api, **dataset)
-                    self._datasets[instance.id.lower()] = instance
                 else:
                     raise ValueError(f"Unknown dataset type: {dataset.get('identifier')}")
+                self._datasets[instance.id] = instance
         return self._datasets
 
     @property
@@ -186,7 +184,14 @@ class UsCensusCatalog(BaseModel):
         return datasets
 
     def get_dataset(self, dataset_id: str) -> "UsCensusDataset":
-        return self.datasets[dataset_id.lower()]
+        dataset = self.datasets.get(dataset_id)
+        if dataset is not None:
+            return dataset
+        lookup_id = dataset_id.lower()
+        for existing_id, existing_dataset in self.datasets.items():
+            if existing_id.lower() == lookup_id:
+                return existing_dataset
+        raise KeyError(dataset_id)
 
 
 class UsCensusDataset(BaseModel):
@@ -384,7 +389,7 @@ class UsCensusDataset(BaseModel):
             id=self.id + ".json",
             name=self.id + ".json",
             content_url=content_url,
-            encoding_format=mlc.EncodingFormat.JSON,
+            encoding_formats=[mlc.EncodingFormat.JSON],
         )
         distribution.append(fileobject)
         metadata.distribution = distribution

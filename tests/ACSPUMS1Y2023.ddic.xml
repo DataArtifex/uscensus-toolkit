@@ -7,7 +7,7 @@
 				<IDNo agency="census.gov">ACSPUMS1Y2023</IDNo>
 			</titlStmt>
 			<prodStmt>
-				<prodDate date="2025-02-14T10:46:40">2025-02-14T10:46:40</prodDate>
+				<prodDate date="2026-03-25T15:19:53">2026-03-25T15:19:53</prodDate>
 				<software version="0.0.1">Data Artifex - U.S. Census (darfx-uscensus)</software>
 			</prodStmt>
 		</citation>
@@ -1073,7 +1073,7 @@
 			</catgry>
 			<catgry>
 				<catValu>-1</catValu>
-				<labl>N/A (GQ,vacant units, except &quot;for-rent-only&quot; and &quot;rented, not occupied&quot;/owned or being bought)</labl>
+				<labl>N/A (GQ,vacant units, except "for-rent-only" and "rented, not occupied"/owned or being bought)</labl>
 			</catgry>
 			<catgry>
 				<catValu>1</catValu>
@@ -4070,7 +4070,7 @@
 			<varFormat type="numeric" schema="other" formatname="uscensus">int</varFormat>
 		</var>
 		<var ID="NWLA" name="NWLA" files="F1" wgt-var="PWGTP" weight="PWGTP">
-			<labl>On layoff from work (UNEDITED - See &quot;Employment Status Recode&quot; (ESR))</labl>
+			<labl>On layoff from work (UNEDITED - See "Employment Status Recode" (ESR))</labl>
 			<catgry>
 				<catValu>1</catValu>
 				<labl>Yes</labl>
@@ -5550,7 +5550,7 @@
 			<varFormat type="character" schema="other" formatname="uscensus">string</varFormat>
 		</var>
 		<var ID="NWLK" name="NWLK" files="F1" wgt-var="PWGTP" weight="PWGTP">
-			<labl>Looking for work (UNEDITED - See &quot;Employment Status Recode&quot; (ESR))</labl>
+			<labl>Looking for work (UNEDITED - See "Employment Status Recode" (ESR))</labl>
 			<catgry>
 				<catValu>3</catValu>
 				<labl>Did not report</labl>
@@ -8757,7 +8757,7 @@
 			</catgry>
 			<catgry>
 				<catValu>0</catValu>
-				<labl>N/A (GQ/vacant units, except &quot;for rent&quot; and &quot;rented, not occupied&quot;/owned or being bought/occupied without rent payment)</labl>
+				<labl>N/A (GQ/vacant units, except "for rent" and "rented, not occupied"/owned or being bought/occupied without rent payment)</labl>
 			</catgry>
 			<varFormat type="numeric" schema="other" formatname="uscensus">int</varFormat>
 		</var>
@@ -9226,7 +9226,7 @@
 			<varFormat type="numeric" schema="other" formatname="uscensus">int</varFormat>
 		</var>
 		<var ID="NWRE" name="NWRE" files="F1" wgt-var="PWGTP" weight="PWGTP">
-			<labl>Informed of recall (UNEDITED - See &quot;Employment Status Recode&quot; (ESR))</labl>
+			<labl>Informed of recall (UNEDITED - See "Employment Status Recode" (ESR))</labl>
 			<catgry>
 				<catValu>2</catValu>
 				<labl>No</labl>
@@ -11589,7 +11589,7 @@
 			</catgry>
 			<catgry>
 				<catValu>-1</catValu>
-				<labl>N/A (GQ/ vacant units, except &quot;for-sale-only&quot; and &quot;sold, not occupied&quot;/not owned or being bought)</labl>
+				<labl>N/A (GQ/ vacant units, except "for-sale-only" and "sold, not occupied"/not owned or being bought)</labl>
 			</catgry>
 			<varFormat type="numeric" schema="other" formatname="uscensus">int</varFormat>
 		</var>
@@ -25614,7 +25614,7 @@
 			<varFormat type="numeric" schema="other" formatname="uscensus">int</varFormat>
 		</var>
 		<var ID="NWAB" name="NWAB" files="F1" wgt-var="PWGTP" weight="PWGTP">
-			<labl>Temporary absence from work (UNEDITED - See &quot;Employment Status Recode&quot; (ESR))</labl>
+			<labl>Temporary absence from work (UNEDITED - See "Employment Status Recode" (ESR))</labl>
 			<catgry>
 				<catValu>0</catValu>
 				<labl>N/A (less than 16 years old/at work/on layoff)</labl>
@@ -25710,7 +25710,7 @@
 			<varFormat type="numeric" schema="other" formatname="uscensus">int</varFormat>
 		</var>
 		<var ID="NWAV" name="NWAV" files="F1" wgt-var="PWGTP" weight="PWGTP">
-			<labl>Available for work (UNEDITED - See &quot;Employment Status Recode&quot; (ESR))</labl>
+			<labl>Available for work (UNEDITED - See "Employment Status Recode" (ESR))</labl>
 			<catgry>
 				<catValu>5</catValu>
 				<labl>Did not report</labl>
