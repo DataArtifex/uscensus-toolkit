@@ -10,17 +10,17 @@
 
       The Text module includes declarations for all core
       text container elements and their attributes.
-    
+
         +  block phrasal
         +  block structural
         +  inline phrasal
         +  inline structural
-      
+
       $Id$
     </xs:documentation>
     <xs:documentation source="xhtml-copyright-1.xsd"/>
-    <xs:documentation 
-        source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstract_modules.html#s_textmodule"/>          
+    <xs:documentation
+        source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstract_modules.html#s_textmodule"/>
   </xs:annotation>
 
   <xs:include schemaLocation="xhtml-blkphras-1.xsd">
@@ -37,7 +37,7 @@
   <xs:include schemaLocation="xhtml-blkstruct-1.xsd">
     <xs:annotation>
       <xs:documentation>
-        Block Structural module 
+        Block Structural module
         Elements defined here:
 
           * div, p
@@ -59,7 +59,7 @@
   <xs:include schemaLocation="xhtml-inlstruct-1.xsd">
     <xs:annotation>
       <xs:documentation>
-        Inline Structural module 
+        Inline Structural module
         Elements defined here:
 
           * br,span

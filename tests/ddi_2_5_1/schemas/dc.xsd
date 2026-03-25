@@ -12,7 +12,7 @@
 
       Created 2003-04-02
 
-      Created by 
+      Created by
 
       Tim Cole (t-cole3@uiuc.edu)
       Tom Habing (thabing@uiuc.edu)
@@ -23,14 +23,14 @@
       This schema declares XML elements for the 15 DC elements from the
       http://purl.org/dc/elements/1.1/ namespace.
 
-      It defines a complexType SimpleLiteral which permits mixed content 
+      It defines a complexType SimpleLiteral which permits mixed content
       and makes the xml:lang attribute available. It disallows child elements by
       use of minOcccurs/maxOccurs.
 
       However, this complexType does permit the derivation of other complexTypes
       which would permit child elements.
 
-      All elements are declared as substitutable for the abstract element any, 
+      All elements are declared as substitutable for the abstract element any,
       which means that the default type for all elements is dc:SimpleLiteral.
 
     </xs:documentation>
@@ -49,13 +49,13 @@
             It permits text content only with optional
             xml:lang attribute.
             Text is allowed because mixed="true", but sub-elements
-            are disallowed because minOccurs="0" and maxOccurs="0" 
+            are disallowed because minOccurs="0" and maxOccurs="0"
             are on the xs:any tag.
 
     	    This complexType allows for restriction or extension permitting
             child elements.
     	</xs:documentation>
-		<xs:documentation xml:lang="en">This structure has been altered from 
+		<xs:documentation xml:lang="en">This structure has been altered from
 			its original declaration of:
 			<xs:complexType name="SimpleLiteral">
 				<xs:complexContent mixed="true">
@@ -66,10 +66,10 @@
 						<xs:attribute ref="xml:lang" use="optional"/>
 					</xs:restriction>
 				</xs:complexContent>
-			</xs:complexType>		
-			Such a restriction from the xs:anyType is unnecessary, as this is 
-			implicit in all types. Further, the xs:any element with a minOccurs="0" 
-			causes issues with Apache Xml Beans. This declaration allows for an 
+			</xs:complexType>
+			Such a restriction from the xs:anyType is unnecessary, as this is
+			implicit in all types. Further, the xs:any element with a minOccurs="0"
+			causes issues with Apache Xml Beans. This declaration allows for an
 			equivalent content model while still allowing extensions from this type
 			to declare elements to allow for true mixed content.
 		</xs:documentation>
@@ -99,7 +99,7 @@
   	<xs:annotation>
     	<xs:documentation xml:lang="en">
     	    This group is included as a convenience for schema authors
-            who need to refer to all the elements in the 
+            who need to refer to all the elements in the
             http://purl.org/dc/elements/1.1/ namespace.
     	</xs:documentation>
   	</xs:annotation>

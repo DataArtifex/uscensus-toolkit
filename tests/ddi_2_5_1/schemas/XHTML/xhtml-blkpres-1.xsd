@@ -13,25 +13,25 @@
   <xs:annotation>
     <xs:documentation>
       Block Presentational Elements
-  
+
         * hr
-  
+
       This module declares the elements and their attributes used to
       support block-level presentational markup.
     </xs:documentation>
     <xs:documentation source="xhtml-copyright-1.xsd"/>
-    <xs:documentation 
-         source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstract_modules.html#s_presentationmodule"/>    
+    <xs:documentation
+         source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstract_modules.html#s_presentationmodule"/>
   </xs:annotation>
 
   <xs:attributeGroup name="hr.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
   </xs:attributeGroup>
-  
+
   <xs:group name="hr.content">
     <xs:sequence/>
-  </xs:group>  
-  
+  </xs:group>
+
   <xs:complexType name="hr.type">
     <xs:group ref="hr.content"/>
     <xs:attributeGroup ref="hr.attlist"/>

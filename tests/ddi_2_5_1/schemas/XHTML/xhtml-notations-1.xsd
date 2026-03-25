@@ -11,16 +11,16 @@
     </xs:documentation>
     <xs:documentation source="xhtml-copyright-1.xsd"/>
   </xs:annotation>
-  
+
   <xs:annotation>
     <xs:documentation>
       Notations module
-      Defines the XHTML notations, many of these imported from 
+      Defines the XHTML notations, many of these imported from
       other specifications and standards. When an existing FPI is
-      known, it is incorporated here.            
+      known, it is incorporated here.
     </xs:documentation>
     <xs:documentation
-         source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstraction.html#s_common_attrtypes"/>        
+         source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstraction.html#s_common_attrtypes"/>
   </xs:annotation>
 
   <!-- W3C XML 1.0 Recommendation -->
@@ -29,7 +29,7 @@
 
   <!-- XML 1.0 CDATA -->
   <xs:notation name="cdata" public="-//W3C//NOTATION XML 1.0: CDATA//EN"/>
-  
+
   <!-- SGML Formal Public Identifiers -->
   <xs:notation name="fpi"
     public="ISO 8879:1986//NOTATION Formal Public Identifier//EN"/>

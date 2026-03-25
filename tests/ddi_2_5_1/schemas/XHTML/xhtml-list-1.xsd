@@ -8,22 +8,22 @@
       List Module
       This is the XML Schema Lists module for XHTML
       List Module Elements
-    
+
         * dl, dt, dd, ol, ul, li
-    
+
       This module declares the list-oriented element types
       and their attributes.
-      $Id$      
+      $Id$
     </xs:documentation>
     <xs:documentation source="xhtml-copyright-1.xsd"/>
     <xs:documentation
-      source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstract_modules.html#s_listmodule"/>      
+      source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstract_modules.html#s_listmodule"/>
   </xs:annotation>
 
   <xs:attributeGroup name="dt.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
   </xs:attributeGroup>
-  
+
   <xs:group name="dt.content">
     <xs:sequence>
       <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>
@@ -40,10 +40,10 @@
   <xs:attributeGroup name="dd.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
   </xs:attributeGroup>
-  
+
   <xs:group name="dd.content">
     <xs:sequence>
-      <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>  
+      <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:group>
 
@@ -77,15 +77,15 @@
   <xs:attributeGroup name="li.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
   </xs:attributeGroup>
-  
+
   <xs:group name="li.content">
     <xs:sequence>
       <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>      
+    </xs:sequence>
   </xs:group>
 
   <xs:complexType name="li.type" mixed="true">
-    <xs:group ref="li.content"/>  
+    <xs:group ref="li.content"/>
     <xs:attributeGroup ref="li.attlist"/>
   </xs:complexType>
 
@@ -102,7 +102,7 @@
   </xs:group>
 
   <xs:complexType name="ol.type">
-    <xs:group ref="ol.content"/>  
+    <xs:group ref="ol.content"/>
     <xs:attributeGroup ref="ol.attlist"/>
   </xs:complexType>
 
@@ -111,7 +111,7 @@
   <xs:attributeGroup name="ul.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
   </xs:attributeGroup>
-  
+
   <xs:group name="ul.content">
     <xs:sequence>
       <xs:element ref="li" maxOccurs="unbounded"/>
@@ -119,7 +119,7 @@
   </xs:group>
 
   <xs:complexType name="ul.type">
-    <xs:group ref="ul.content"/>    
+    <xs:group ref="ul.content"/>
     <xs:attributeGroup ref="ul.attlist"/>
   </xs:complexType>
 

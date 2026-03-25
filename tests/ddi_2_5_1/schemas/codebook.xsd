@@ -20,9 +20,9 @@ with DDI 2.5 XML Schema. If not, see <http://www.gnu.org/licenses/>.
 
 -->
 <!--
-DDI 2.5.1 XML Schema modifies DDI 2.5 by easing cardinality on many text 
-entries to better support multi-language content. It provides the element 
-dataFingerprint within fileTxt as a sub-minor, backward compatible bug correction. 
+DDI 2.5.1 XML Schema modifies DDI 2.5 by easing cardinality on many text
+entries to better support multi-language content. It provides the element
+dataFingerprint within fileTxt as a sub-minor, backward compatible bug correction.
 This element was intended to be included in DDI 2.5. Documentation of new objects
 was expanded.
 
@@ -40,7 +40,7 @@ These changes do not effect the namespace. 2013-11-14.
            attributeFormDefault="unqualified">
    <xs:annotation>
       <xs:documentation>
-         This is a w3c Schema "Technical Implementation" of the DDI Conceptual Specification. 
+         This is a w3c Schema "Technical Implementation" of the DDI Conceptual Specification.
          This schema is intended for use in producing electronic versions of codebooks for quantitative social science data.
          Please note that the attribute xml-lang in the a.globals group is an error that was persisted to retain backward compatibility. DO NOT USE THIS ATTRIBUTE. If this attribute has been used, transfer the content to xml:lang.
    	  </xs:documentation>
@@ -49,9 +49,9 @@ These changes do not effect the namespace. 2013-11-14.
    <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
    <xs:import namespace="http://www.w3.org/1999/xhtml" schemaLocation="ddi-xhtml11.xsd"/>
    <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
-   
+
    <!-- Base Structures -->
-   
+
    <xs:attributeGroup name="GLOBALS">
       <xs:attribute name="ID" type="xs:ID" use="optional"/>
       <xs:attribute name="xml-lang" type="xs:NMTOKEN" use="optional">
@@ -89,7 +89,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:annotation>
       </xs:attribute>
    </xs:attributeGroup>
-   
+
    <xs:complexType name="baseElementType" abstract="true">
       <xs:annotation>
          <xs:documentation>
@@ -104,7 +104,7 @@ These changes do not effect the namespace. 2013-11-14.
       </xs:annotation>
       <xs:attributeGroup ref="GLOBALS"/>
    </xs:complexType>
-   
+
    <xs:complexType name="abstractTextType" mixed="true" abstract="true">
       <xs:annotation>
          <xs:documentation>
@@ -114,7 +114,7 @@ These changes do not effect the namespace. 2013-11-14.
 						<xhtml:h2 class="section_header">Description</xhtml:h2>
 						<xhtml:div class="description">This type forms the basis for all textual elements. Textual elements may contain text or a mix of select elements. This type is abstract and is refined by more specific types which will limit the allowable elements and attributes. Any textual element will be a subset of this type and can be processed as such.</xhtml:div>
 					</xhtml:div>
-				</xhtml:div>         
+				</xhtml:div>
          </xs:documentation>
       </xs:annotation>
       <xs:complexContent>
@@ -127,7 +127,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:complexType name="simpleTextType" mixed="true">
          <xs:annotation>
          <xs:documentation>
@@ -137,7 +137,7 @@ These changes do not effect the namespace. 2013-11-14.
 						<xhtml:h2 class="section_header">Description</xhtml:h2>
 						<xhtml:div class="description">This type forms the basis of most textual elements. Elements using this type may have mixed content (text and child elements). The child elements are from the PHRASE, FORM, and xhtml:BlkNoForm.mix (a specific subset of XHTML) content groups. Note that if elements from the PHRASE and FORM groups must not be used with elements from the xhtml:BlkNoForm.mix group; one can use either elements from xhtml:BlkNoForm.mix or elements from the PHRASE and FORM groups. This type is extended in some cases to include additional attributes.</xhtml:div>
 					</xhtml:div>
-				</xhtml:div>  
+				</xhtml:div>
          </xs:documentation>
       </xs:annotation>
       <xs:complexContent>
@@ -145,14 +145,14 @@ These changes do not effect the namespace. 2013-11-14.
             <xs:sequence>
                <xs:choice minOccurs="0" maxOccurs="unbounded">
                   <xs:group ref="PHRASE"/>
-                  <xs:group ref="FORM"/>         
+                  <xs:group ref="FORM"/>
                   <xs:group ref="xhtml:BlkNoForm.mix"/>
-               </xs:choice>            
+               </xs:choice>
             </xs:sequence>
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:complexType name="conceptualTextType" mixed="true">
       <xs:annotation>
          <xs:documentation>
@@ -162,7 +162,7 @@ These changes do not effect the namespace. 2013-11-14.
 						<xhtml:h2 class="section_header">Description</xhtml:h2>
 						<xhtml:div class="description">This type forms this basis for a textual element which may also provide for a conceptual (see concept) description of the element a longer description (see txt). If the concept and/or txt elements are used, then the element should contain no other child elements or text. Note that if elements from the PHRASE and FORM groups must not be used with elements from the xhtml:BlkNoForm.mix group; one can use either elements from xhtml:BlkNoForm.mix or elements from the PHRASE and FORM groups.</xhtml:div>
 					</xhtml:div>
-				</xhtml:div>          
+				</xhtml:div>
          </xs:documentation>
       </xs:annotation>
       <xs:complexContent>
@@ -170,31 +170,31 @@ These changes do not effect the namespace. 2013-11-14.
             <xs:sequence>
                <xs:choice minOccurs="0" maxOccurs="unbounded">
                   <xs:group ref="PHRASE"/>
-                  <xs:group ref="FORM"/>         
+                  <xs:group ref="FORM"/>
                   <xs:group ref="xhtml:BlkNoForm.mix"/>
                   <xs:element ref="concept"/>
                   <xs:element ref="txt"/>
-               </xs:choice>               
+               </xs:choice>
             </xs:sequence>
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:complexType name="tableAndTextType" mixed="true">
       <xs:complexContent>
          <xs:restriction base="abstractTextType">
             <xs:sequence>
                <xs:choice minOccurs="0" maxOccurs="unbounded">
                   <xs:group ref="PHRASE"/>
-                  <xs:group ref="FORM"/>         
+                  <xs:group ref="FORM"/>
                   <xs:group ref="xhtml:BlkNoForm.mix"/>
-                  <xs:element ref="table"/>               
-               </xs:choice>               
+                  <xs:element ref="table"/>
+               </xs:choice>
             </xs:sequence>
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:complexType name="materialReferenceType" mixed="true">
       <xs:complexContent>
          <xs:restriction base="abstractTextType">
@@ -203,13 +203,13 @@ These changes do not effect the namespace. 2013-11-14.
                   <xs:group ref="PHRASE"/>
                   <xs:group ref="FORM"/>
                   <xs:group ref="xhtml:BlkNoForm.mix"/>
-                  <xs:element ref="citation"/>               
-               </xs:choice>               
+                  <xs:element ref="citation"/>
+               </xs:choice>
             </xs:sequence>
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:complexType name="simpleTextAndDateType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -217,7 +217,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:complexType name="phraseType" mixed="true">
       <xs:annotation>
          <xs:documentation>
@@ -235,12 +235,12 @@ These changes do not effect the namespace. 2013-11-14.
             <xs:sequence>
                <xs:choice minOccurs="0" maxOccurs="unbounded">
                   <xs:group ref="PHRASE"/>
-               </xs:choice>               
+               </xs:choice>
             </xs:sequence>
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:complexType name="stringType">
       <xs:annotation>
          <xs:documentation>
@@ -261,7 +261,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:restriction>
       </xs:simpleContent>
    </xs:complexType>
-   
+
    <xs:complexType name="integerType">
       <xs:annotation>
          <xs:documentation>
@@ -282,7 +282,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:restriction>
       </xs:simpleContent>
    </xs:complexType>
-   
+
    <xs:simpleType name="dateSimpleType">
       <xs:annotation>
          <xs:documentation>
@@ -297,7 +297,7 @@ These changes do not effect the namespace. 2013-11-14.
       </xs:annotation>
       <xs:union memberTypes="xs:dateTime xs:date xs:gYearMonth xs:gYear"/>
    </xs:simpleType>
-   
+
    <xs:complexType name="dateType">
       <xs:annotation>
          <xs:documentation>
@@ -318,9 +318,9 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:restriction>
       </xs:simpleContent>
    </xs:complexType>
-   
+
    <!-- PRHASE Elements -->
-   
+
    <xs:group name="PHRASE">
       <xs:choice>
          <xs:element ref="ExtLink" minOccurs="0" maxOccurs="unbounded"/>
@@ -351,7 +351,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="LinkType" mixed="true">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -361,7 +361,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="Link" type="LinkType">
       <xs:annotation>
          <xs:documentation>
@@ -375,9 +375,9 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <!-- FORM Elements -->
-   
+
    <xs:group name="FORM">
       <xs:choice>
          <xs:element ref="div"/>
@@ -388,7 +388,7 @@ These changes do not effect the namespace. 2013-11-14.
          <xs:element ref="p"/>
       </xs:choice>
    </xs:group>
-   
+
    <xs:complexType name="formType" mixed="true" abstract="true">
       <xs:annotation>
          <xs:documentation>
@@ -409,7 +409,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xs:group ref="FORM"/>
                   <xs:element ref="itm"/>
                   <xs:element ref="label"/>
-               </xs:choice>               
+               </xs:choice>
             </xs:sequence>
             <xs:attribute name="n" type="xs:string"/>
             <xs:attribute name="rend" type="xs:string"/>
@@ -417,20 +417,20 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:complexType name="divType">
       <xs:complexContent>
          <xs:restriction base="formType">
             <xs:sequence>
                <xs:choice minOccurs="0" maxOccurs="unbounded">
                   <xs:group ref="FORM"/>
-               </xs:choice>               
+               </xs:choice>
             </xs:sequence>
             <xs:attribute name="type" type="xs:string" use="prohibited"/>
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="div" type="divType">
       <xs:annotation>
          <xs:documentation>
@@ -452,13 +452,13 @@ These changes do not effect the namespace. 2013-11-14.
                <xs:choice minOccurs="0" maxOccurs="unbounded">
                   <xs:element ref="hi"/>
                   <xs:element ref="list"/>
-               </xs:choice>               
+               </xs:choice>
             </xs:sequence>
             <xs:attribute name="type" type="xs:string" use="prohibited"/>
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="emph" type="emphType">
       <xs:annotation>
          <xs:documentation>
@@ -472,7 +472,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="headType" mixed="true">
       <xs:complexContent>
          <xs:restriction base="formType">
@@ -482,12 +482,12 @@ These changes do not effect the namespace. 2013-11-14.
                   <xs:element ref="emph"/>
                   <xs:element ref="hi"/>
                   <xs:element ref="list"/>
-               </xs:choice>               
+               </xs:choice>
             </xs:sequence>
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="head" type="headType">
       <xs:annotation>
          <xs:documentation>
@@ -501,7 +501,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="hiType" mixed="true">
       <xs:complexContent>
          <xs:restriction base="formType">
@@ -509,13 +509,13 @@ These changes do not effect the namespace. 2013-11-14.
                <xs:choice minOccurs="0" maxOccurs="unbounded">
                   <xs:element ref="emph"/>
                   <xs:element ref="list"/>
-               </xs:choice>               
+               </xs:choice>
             </xs:sequence>
             <xs:attribute name="type" type="xs:string" use="prohibited"/>
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="hi" type="hiType">
       <xs:annotation>
          <xs:documentation>
@@ -529,7 +529,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="listType">
       <xs:complexContent>
          <xs:restriction base="formType">
@@ -537,7 +537,7 @@ These changes do not effect the namespace. 2013-11-14.
                <xs:choice minOccurs="0" maxOccurs="unbounded">
                   <xs:element ref="itm"/>
                   <xs:element ref="label"/>
-               </xs:choice>               
+               </xs:choice>
             </xs:sequence>
             <xs:attribute name="type" default="simple">
                <xs:simpleType>
@@ -552,7 +552,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="list" type="listType">
       <xs:annotation>
          <xs:documentation>
@@ -578,7 +578,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xs:element ref="list"/>
                   <xs:element ref="p"/>
                   <xs:element ref="label"/>
-               </xs:choice>               
+               </xs:choice>
             </xs:sequence>
             <xs:attribute name="type" type="xs:string" use="prohibited"/>
          </xs:restriction>
@@ -598,7 +598,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="labelType" mixed="true">
       <xs:complexContent>
          <xs:restriction base="formType">
@@ -606,8 +606,8 @@ These changes do not effect the namespace. 2013-11-14.
                <xs:choice minOccurs="0" maxOccurs="unbounded">
                   <xs:group ref="PHRASE"/>
                   <xs:element ref="emph"/>
-                  <xs:element ref="hi"/>               
-               </xs:choice>               
+                  <xs:element ref="hi"/>
+               </xs:choice>
             </xs:sequence>
             <xs:attribute name="type" type="xs:string" use="prohibited"/>
          </xs:restriction>
@@ -636,8 +636,8 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:h2 class="section_header">Example</xhtml:h2>
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
-                        <recGrp rectype="A" keyvar="H-SEQ" recidvar="PRECORD"> 
-                           <labl>Person (A) Record</labl> 
+                        <recGrp rectype="A" keyvar="H-SEQ" recidvar="PRECORD">
+                           <labl>Person (A) Record</labl>
                         </recGrp>
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
@@ -649,7 +649,7 @@ These changes do not effect the namespace. 2013-11-14.
                         <varGrp>
                            <labl>Political Involvement and National Goals</labl>
                         </varGrp>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <varGrp>
                            <labl>Household Variable Section</labl>
@@ -682,12 +682,12 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <catgry>
-                           <labl>About the same</labl> 
+                           <labl>About the same</labl>
                         </catgry>
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <catgry>
-                           <labl>Inap.</labl> 
+                           <labl>Inap.</labl>
                         </catgry>
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
@@ -706,7 +706,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="pType" mixed="true">
       <xs:complexContent>
          <xs:restriction base="formType">
@@ -716,13 +716,13 @@ These changes do not effect the namespace. 2013-11-14.
                   <xs:element ref="emph"/>
                   <xs:element ref="hi"/>
                   <xs:element ref="list"/>
-               </xs:choice>               
+               </xs:choice>
             </xs:sequence>
                <xs:attribute name="type" type="xs:string" use="prohibited"/>
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="p" type="pType">
       <xs:annotation>
          <xs:documentation>
@@ -736,9 +736,9 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <!-- Codebook Elements -->
-   
+
    <xs:complexType name="abstractType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextAndDateType">
@@ -754,7 +754,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="abstract" type="abstractType">
       <xs:annotation>
          <xs:documentation>
@@ -776,7 +776,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="accsPlacType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -798,7 +798,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="actMin" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -820,7 +820,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="altTitl" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -834,7 +834,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="anlyInfoType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -846,7 +846,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="anlyInfo" type="anlyInfoType">
       <xs:annotation>
          <xs:documentation>
@@ -860,7 +860,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="anlyUnitType" mixed="true">
       <xs:complexContent>
          <xs:extension base="conceptualTextType">
@@ -868,7 +868,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="anlyUnit" type="anlyUnitType">
       <xs:annotation>
          <xs:documentation>
@@ -883,14 +883,14 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <anlyUnit>individuals</anlyUnit>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-     
+
    <xs:element name="anlysUnit" type="conceptualTextType">
       <xs:annotation>
          <xs:documentation>
@@ -907,7 +907,7 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <anlysUnit>This variable reports election returns at the constituency level.</anlysUnit>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <nCube>
                            <anlysUnit>Household</anlysUnit>
@@ -919,7 +919,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="AuthEntyType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -948,14 +948,14 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <AuthEnty affiliation="European Commission">Rabier, Jacques-Rene</AuthEnty>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
- 
+
    <xs:element name="avlStatus" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -977,7 +977,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="backwardType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -1002,16 +1002,16 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <qstn>
                               <backward qstn="Q12 Q13 Q14 Q15">For responses on a similar topic, see questions 12-15.</backward>
-                           </qstn> 
+                           </qstn>
                         </var>
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <var>
                            <qstn>
                               <backward qstn="Q143"/>
-                           </qstn> 
+                           </qstn>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -1220,7 +1220,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="catStatType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -1270,7 +1270,7 @@ These changes do not effect the namespace. 2013-11-14.
                               <catStat type="freq">256</catStat>
                            </catgryGrp>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -1293,10 +1293,10 @@ These changes do not effect the namespace. 2013-11-14.
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <var>
                            <catgry missing="Y" missType="inap">
-                              <catValu>9</catValu> 
+                              <catValu>9</catValu>
                            </catgry>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -1333,7 +1333,7 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <catlevel ID="Level3" levelnm="Occupations" geoMap="GEO_1 GEO_2"/>
-                     ]]></xhtml:samp>                  
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -1514,7 +1514,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="citationType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -1581,7 +1581,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="codInstr" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -1598,7 +1598,7 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <codInstr>Use the standard classification tables to present responses to the question: What is your occupation? into numeric codes.</codInstr>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -1625,7 +1625,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="codeBook" type="codeBookType">
       <xs:annotation>
          <xs:documentation>
@@ -1677,7 +1677,7 @@ These changes do not effect the namespace. 2013-11-14.
                         <dmns>
                            <cohort catRef="CV24_1" value="1"/>
                         </dmns>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -1716,14 +1716,14 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <collDate event="single" date="1998-11-10">10 November 1998</collDate>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="collMode" type="conceptualTextType">
       <xs:annotation>
          <xs:documentation>
@@ -1754,7 +1754,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="collSitu" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -1769,14 +1769,14 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <collSitu>There were 1,194 respondents who answered questions in face-to-face interviews lasting approximately 75 minutes each.</collSitu>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="collSize" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -1798,7 +1798,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="colspecType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -1823,7 +1823,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="colspec" type="colspecType">
       <xs:annotation>
          <xs:documentation>
@@ -1833,7 +1833,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="complete" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -1855,7 +1855,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="conceptType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -1896,7 +1896,7 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <concept vocab="LCSH" vocabURI="http://lcweb.loc.gov/catdir/cpso/lcco/lcco.html" source="archive">SF: 311-312 draft horses</concept>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -1925,7 +1925,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="confDecType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -2045,7 +2045,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="controlledVocabUsed" type="controlledVocabUsedType">
       <xs:annotation>
          <xs:documentation>
@@ -2059,7 +2059,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="codeListID" type="stringType">
       <xs:annotation>
          <xs:documentation>
@@ -2125,7 +2125,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="codeListVersionID" type="stringType">
       <xs:annotation>
          <xs:documentation>
@@ -2147,7 +2147,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="codeListURN" type="stringType">
       <xs:annotation>
          <xs:documentation>
@@ -2169,7 +2169,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="codeListSchemeURN" type="stringType">
       <xs:annotation>
          <xs:documentation>
@@ -2189,7 +2189,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="usage" type="usageType">
       <xs:annotation>
          <xs:documentation>
@@ -2203,7 +2203,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="usageType">
       <xs:sequence>
          <xs:choice>
@@ -2213,13 +2213,13 @@ These changes do not effect the namespace. 2013-11-14.
          <xs:element ref="attribute" minOccurs="0"/>
       </xs:sequence>
    </xs:complexType>
-   
+
    <xs:simpleType name="selectorType">
       <xs:restriction base="xs:string">
          <xs:pattern value="((//|/)(([\i-[:]][\c-[:]]*:)?[\i-[:]][\c-[:]]*|\*|[\i-[:]][\c-[:]]*:\*))+"/>
       </xs:restriction>
    </xs:simpleType>
-   
+
    <xs:element name="selector" type="selectorType">
       <xs:annotation>
          <xs:documentation>
@@ -2239,12 +2239,12 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="specificElementsType">
       <xs:attribute name="refs" type="xs:IDREFS" use="required"/>
       <xs:attribute name="authorizedCodeValue" type="xs:NMTOKEN" use="optional"/>
    </xs:complexType>
-   
+
    <xs:element name="specificElements" type="specificElementsType">
       <xs:annotation>
          <xs:documentation>
@@ -2264,13 +2264,13 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:simpleType name="attributeType">
       <xs:restriction base="xs:string">
          <xs:pattern value="@(([\i-[:]][\c-[:]]*:)?[\i-[:]][\c-[:]]*|\*|[\i-[:]][\c-[:]]*:\*)"/>
       </xs:restriction>
    </xs:simpleType>
-   
+
    <xs:element name="attribute" type="attributeType">
       <xs:annotation>
          <xs:documentation>
@@ -2324,7 +2324,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="CubeCoord" type="CubeCoordType">
       <xs:annotation>
          <xs:documentation>
@@ -2345,14 +2345,14 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <CubeCoord coordNo="3" coordVal="2"/>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="dataAccsType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -2364,7 +2364,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="dataAccs" type="dataAccsType">
       <xs:annotation>
          <xs:documentation>
@@ -2378,7 +2378,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="dataApprType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -2386,7 +2386,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="dataAppr" type="dataApprType">
       <xs:annotation>
          <xs:documentation>
@@ -2408,7 +2408,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="dataChck" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -2463,7 +2463,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="dataCollType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -2503,7 +2503,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="sampleFrameType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -2561,7 +2561,7 @@ These changes do not effect the namespace. 2013-11-14.
 </xs:documentation>
 </xs:annotation>
 </xs:element>
-   
+
    <xs:complexType name="eventDateType">
       <xs:simpleContent>
          <xs:extension base="dateType">
@@ -2577,7 +2577,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:simpleContent>
    </xs:complexType>
-   
+
    <xs:element name="validPeriod" type="eventDateType">
 <xs:annotation>
 <xs:documentation>
@@ -2630,7 +2630,7 @@ These changes do not effect the namespace. 2013-11-14.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-   
+
    <xs:complexType name="frameUnitType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -2753,7 +2753,7 @@ These changes do not effect the namespace. 2013-11-14.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-   
+
    <xs:element name="sampleSizeFormula" type="stringType">
 		<xs:annotation>
 			<xs:documentation>
@@ -2786,7 +2786,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="instrumentDevelopment" type="instrumentDevelopmentType">
       <xs:annotation>
          <xs:documentation>
@@ -2809,7 +2809,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="updateProcedure" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -2864,7 +2864,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="collectorTrainingType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -2895,7 +2895,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="dataCollectorType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -3030,14 +3030,14 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <dataMsng>The codes "-1" and "-2" are used to represent missing data.</dataMsng>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="dataSrc" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -3055,7 +3055,7 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <dataSrc>United States Internal Revenue Service Quarterly Payroll File</dataSrc>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -3135,7 +3135,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="depositrType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -3365,7 +3365,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="distrbtr" type="distrbtrType">
       <xs:annotation>
          <xs:documentation>
@@ -3387,7 +3387,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="dmnsType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -3399,7 +3399,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="dmns" type="dmnsType">
       <xs:annotation>
          <xs:documentation>
@@ -3413,7 +3413,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="docDscrType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -3428,7 +3428,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="docDscr" type="docDscrType">
       <xs:annotation>
          <xs:documentation>
@@ -3442,7 +3442,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="docSrcType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -3461,7 +3461,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="docSrc" type="docSrcType">
       <xs:annotation>
          <xs:documentation>
@@ -3497,7 +3497,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="drvcmdType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -3505,7 +3505,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="drvcmd" type="drvcmdType">
       <xs:annotation>
          <xs:documentation>
@@ -3524,14 +3524,14 @@ These changes do not effect the namespace. 2013-11-14.
                               <drvcmd syntax="SPSS">RECODE V1 TO V3 (0=1) (1=0) (2=-1) INTO DEFENSE WELFAREHEALTH. </drvcmd>
                            </derivation>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="drvdesc" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -3550,14 +3550,14 @@ These changes do not effect the namespace. 2013-11-14.
                               <drvdesc> VAR215.01 "Outcome of first pregnancy" (1988 NSFG=VAR611 PREGOUT1) If R has never been pregnant (VAR203 PREGNUM EQ 0) then OUTCOM01 is blank/inapplicable. Else, OUTCOM01 is transferred from VAR225 OUTCOME for R's 1st pregnancy. </drvdesc>
                            </derivation>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="eastBL" type="phraseType">
       <xs:annotation>
          <xs:documentation>
@@ -3571,7 +3571,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="embargoType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextAndDateType">
@@ -3608,14 +3608,14 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <embargo event="notBefore" date="2001-09-30"> The data associated with this variable/nCube will not become available until September 30, 2001, because of embargo provisions established by the data producers.</embargo>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="entryType">
       <xs:simpleContent>
          <xs:extension base="stringType">
@@ -3650,7 +3650,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:simpleContent>
    </xs:complexType>
-   
+
    <xs:element name="entry" type="entryType">
       <xs:annotation>
          <xs:documentation>
@@ -3660,7 +3660,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="EstSmpErr" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -3697,7 +3697,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <fileCont>Part 1 contains both edited and constructed variables describing demographic and family relationships, income, disability, employment, health insurance status, and utilization data for all of 1987.</fileCont>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -3743,7 +3743,7 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <fileDscr ID="LRECL" URI="www.icpsr.umich.edu/cgi-bin/archive.prl?path=ICPSR&amp;num=7728"/>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -3765,7 +3765,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <fileName ID="File1">Second-Generation Children Data</fileName>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -3787,7 +3787,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <filePlac>Washington, DC: United States Department of Commerce, Bureau of the Census</filePlac>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -3809,7 +3809,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <fileQnty>5 files</fileQnty>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -3877,7 +3877,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="fileTxt" type="fileTxtType">
       <xs:annotation>
          <xs:documentation>
@@ -3891,7 +3891,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="fileCitation" type="citationType">
 		<xs:annotation>
 			<xs:documentation>
@@ -3930,7 +3930,7 @@ These changes do not effect the namespace. 2013-11-14.
 			</xs:documentation>
 		</xs:annotation>
 </xs:element>
-   
+
    <xs:complexType name="fileTypeType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -3938,7 +3938,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="fileType" type="fileTypeType">
       <xs:annotation>
          <xs:documentation>
@@ -3953,14 +3953,14 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <fileType charset="US-ASCII">ASCII data file</fileType>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="format" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -3975,7 +3975,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <format>comma-delimited</format>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -4009,7 +4009,7 @@ These changes do not effect the namespace. 2013-11-14.
                               <forward qstn="Q120 Q121 Q122 Q123 Q124">If yes, please ask questions 120-124.</forward>
                            </qstn>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -4024,7 +4024,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="frequenc" type="frequencType">
       <xs:annotation>
          <xs:documentation>
@@ -4049,7 +4049,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="fundAgType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -4198,7 +4198,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <geogUnit>state</geogUnit>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -4278,7 +4278,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="holdingsType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -4289,7 +4289,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="holdings" type="holdingsType">
       <xs:annotation>
          <xs:documentation>
@@ -4314,7 +4314,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="IDNoType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -4373,7 +4373,7 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <imputation>This variable contains values that were derived by substitution.</imputation>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -4410,13 +4410,13 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <invalrng>
-                           <range UNITS="INT" min="98" max="99"/> 
-                           <key> 
-                     			98 DK 
+                           <range UNITS="INT" min="98" max="99"/>
+                           <key>
+                     			98 DK
                      			99 Inappropriate
-                     		</key> 
+                     		</key>
                         </invalrng>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -4456,7 +4456,7 @@ These changes do not effect the namespace. 2013-11-14.
                         <valrng>
                            <item VALUE="1"/>
                            <item VALUE="2"/>
-                           <item VALUE="3"/> 
+                           <item VALUE="3"/>
                         </valrng>
                      ]]></xhtml:samp>
                   </xhtml:div>
@@ -4484,14 +4484,14 @@ These changes do not effect the namespace. 2013-11-14.
                               <ivuInstr>Please prompt the respondent if they are reticent to answer this question.</ivuInstr>
                            </qstn>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="key" type="tableAndTextType">
       <xs:annotation>
          <xs:documentation>
@@ -4506,11 +4506,11 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <valrng>
-                           <range UNITS="INT" maxExclusive="95" min="05" max="80"> </range> 
+                           <range UNITS="INT" maxExclusive="95" min="05" max="80"> </range>
                            <key>
-                        		05 (PSU) Parti Socialiste Unifie et extreme gauche (Lutte Ouvriere) [United Socialists and extreme left (Workers Struggle)] 
-                        		50 Les Verts [Green Party] 
-                        		80 (FN) Front National et extreme droite [National Front and extreme right] 
+                        		05 (PSU) Parti Socialiste Unifie et extreme gauche (Lutte Ouvriere) [United Socialists and extreme left (Workers Struggle)]
+                        		50 Les Verts [Green Party]
+                        		80 (FN) Front National et extreme droite [National Front and extreme right]
                      		</key>
                         </valrng>
                      ]]></xhtml:samp>
@@ -4520,7 +4520,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="keywordType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -4568,7 +4568,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="labl" type="lablType">
       <xs:annotation>
          <xs:documentation>
@@ -4582,7 +4582,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="locMapType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -4592,7 +4592,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="locMap" type="locMapType">
       <xs:annotation>
          <xs:documentation>
@@ -4606,7 +4606,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="locationType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -4619,7 +4619,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="location" type="locationType">
       <xs:annotation>
          <xs:documentation>
@@ -4649,7 +4649,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="logRecL" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -4661,10 +4661,10 @@ These changes do not effect the namespace. 2013-11-14.
                </xhtml:div>
                <xhtml:div>
                   <xhtml:h2 class="section_header">Example</xhtml:h2>
-                  <xhtml:div class="example"> 
+                  <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <logRecL>27</logRecL>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -4763,7 +4763,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="codingInstructions" type="codingInstructionsType">
       <xs:annotation>
          <xs:documentation>
@@ -4789,7 +4789,7 @@ These changes do not effect the namespace. 2013-11-14.
          .</xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="commandType">
       <xs:simpleContent>
          <xs:extension base="stringType">
@@ -4820,7 +4820,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="dataProcessingType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -4851,7 +4851,7 @@ These changes do not effect the namespace. 2013-11-14.
 				</xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="miType" mixed="true">
       <xs:complexContent>
          <xs:extension base="phraseType">
@@ -5024,7 +5024,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="nationType" mixed="true">
       <xs:complexContent>
          <xs:extension base="conceptualTextType">
@@ -5047,7 +5047,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <nation abbr="GB">United Kingdom</nation>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -5068,7 +5068,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="notesType" mixed="true">
       <xs:complexContent>
          <xs:extension base="tableAndTextType">
@@ -5299,7 +5299,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <othId role="editor" affiliation="INRA">Jane Smith</othId>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -5321,7 +5321,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="othRefs" type="othRefsType">
       <xs:annotation>
          <xs:documentation>
@@ -5336,14 +5336,14 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <othRefs>Part II of the documentation, the Field Representative's Manual, is provided in hardcopy form only.</othRefs>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="otherMatType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -5363,7 +5363,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="otherMat" type="otherMatType">
       <xs:annotation>
          <xs:documentation>
@@ -5381,7 +5381,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="othrStdyMatType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -5394,7 +5394,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="othrStdyMat" type="othrStdyMatType">
       <xs:annotation>
          <xs:documentation>
@@ -5408,7 +5408,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="parTitl" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -5466,7 +5466,7 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <physLoc type="hierarchical" recRef="R6" startPos="25" endPos="25" width="1"/>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -5522,7 +5522,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="postQTxt" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -5538,17 +5538,17 @@ These changes do not effect the namespace. 2013-11-14.
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <var>
                            <qstn>
-                              <postQTxt>The next set of questions will ask about your financial situation.</postQTxt> 
+                              <postQTxt>The next set of questions will ask about your financial situation.</postQTxt>
                            </qstn>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="preQTxt" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -5567,7 +5567,7 @@ These changes do not effect the namespace. 2013-11-14.
                               <preQTxt>For those who did not go away on a holiday of four days or more in 1985...</preQTxt>
                            </qstn>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -5592,14 +5592,14 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <ProcStat>The principal investigator notes that the data in Public Use Tape 5 are released prior to final cleaning and editing, in order to provide prompt access to the NMES data by the research and policy community.</ProcStat>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="prodDate" type="simpleTextAndDateType">
       <xs:annotation>
          <xs:documentation>
@@ -5621,7 +5621,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="prodPlac" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -5673,7 +5673,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="producerType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -5683,7 +5683,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="producer" type="producerType">
       <xs:annotation>
          <xs:documentation>
@@ -5712,7 +5712,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="purposeType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -5740,14 +5740,14 @@ These changes do not effect the namespace. 2013-11-14.
                         <nCube>
                            <purpose>Meets reporting requirements for the Federal Reserve Board</purpose>
                         </nCube>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="qstnType" mixed="true">
       <xs:complexContent>
          <xs:restriction base="abstractTextType">
@@ -5762,7 +5762,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xs:element ref="forward"/>
                   <xs:element ref="backward"/>
                   <xs:element ref="ivuInstr"/>
-               </xs:choice>               
+               </xs:choice>
             </xs:sequence>
             <xs:attribute name="qstn" type="xs:IDREF"/>
             <xs:attribute name="var" type="xs:IDREFS"/>
@@ -5786,7 +5786,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:restriction>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="qstn" type="qstnType">
       <xs:annotation>
          <xs:documentation>
@@ -5803,14 +5803,14 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <qstn ID="Q125">When you get together with your friends, would you say you discuss political matters frequently, occasionally, or never?</qstn>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="qstnLitType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -5955,7 +5955,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:h2 class="section_header">Example</xhtml:h2>
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
-                        <fileStrc type="hierarchical"> 
+                        <fileStrc type="hierarchical">
                            <recGrp rectype="Person" keyvar="HHDID">
                               <labl>CPS 1999 Person-Level Record</labl>
                               <recDimnsn>
@@ -5963,7 +5963,7 @@ These changes do not effect the namespace. 2013-11-14.
                                  <caseQnty>1500</caseQnty>
                                  <logRecL>852</logRecL>
                               </recDimnsn>
-                           </recGrp> 
+                           </recGrp>
                         </fileStrc>
                      ]]></xhtml:samp>
                   </xhtml:div>
@@ -6013,7 +6013,7 @@ These changes do not effect the namespace. 2013-11-14.
                         <dimensns>
                            <recPrCas>5</recPrCas>
                         </dimensns>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -6032,14 +6032,14 @@ These changes do not effect the namespace. 2013-11-14.
                         <dimensns>
                            <recPrCas>5</recPrCas>
                         </dimensns>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="relMatType" mixed="true">
       <xs:complexContent>
          <xs:extension base="materialReferenceType">
@@ -6078,7 +6078,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="relPubl" type="materialReferenceType">
       <xs:annotation>
          <xs:documentation>
@@ -6103,7 +6103,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-      
+
    <xs:element name="relStdy" type="materialReferenceType">
       <xs:annotation>
          <xs:documentation>
@@ -6125,7 +6125,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="resInstruType" mixed="true">
       <xs:complexContent>
          <xs:extension base="conceptualTextType">
@@ -6173,7 +6173,7 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <respRate>The overall response rate was 82%, although retail firms with an annual sales volume of more than $5,000,000 were somewhat less likely to respond.</respRate>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -6289,7 +6289,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="sampProc" type="conceptualTextType">
       <xs:annotation>
          <xs:documentation>
@@ -6326,7 +6326,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="security" type="simpleTextAndDateType">
       <xs:annotation>
          <xs:documentation>
@@ -6348,14 +6348,14 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <security date="1998-05-10">Variable(s) within this nCube have been recoded for reasons of confidentiality.  Users should contact the archive for information on obtaining access.</security>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="serInfo" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -6566,7 +6566,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="sourceCitation" type="citationType">
 			<xs:annotation>
 				<xs:documentation>
@@ -6603,7 +6603,7 @@ These changes do not effect the namespace. 2013-11-14.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:element>
-   
+
    <xs:element name="southBL" type="phraseType">
       <xs:annotation>
          <xs:documentation>
@@ -6649,7 +6649,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <specPerm formNo="4">The user must apply for special permission to use this dataset locally and must complete a confidentiality form.</specPerm>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -6684,7 +6684,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="srcOrig" type="conceptualTextType">
       <xs:annotation>
          <xs:documentation>
@@ -6698,7 +6698,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="stdCatgryType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextAndDateType">
@@ -6706,7 +6706,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="stdCatgry" type="stdCatgryType">
       <xs:annotation>
          <xs:documentation>
@@ -6723,14 +6723,14 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <stdCatgry date="1981" source="producer">U. S. Census of Population and Housing, Classified Index of Industries and Occupations </stdCatgry>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="stdyClasType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -6738,7 +6738,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="stdyClas" type="stdyClasType">
       <xs:annotation>
          <xs:documentation>
@@ -6759,14 +6759,14 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <stdyClas>Available from the DDA. Being processed. </stdyClas>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="stdyDscrType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -6930,7 +6930,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:simpleContent>
    </xs:complexType>
-   
+
    <xs:element name="authorizingAgency" type="authorizingAgencyType">
       <xs:annotation>
 				<xs:documentation>
@@ -6953,7 +6953,7 @@ These changes do not effect the namespace. 2013-11-14.
 				</xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="authorizationStatement" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -7180,7 +7180,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:simpleContent>
    </xs:complexType>
-   
+
    <xs:element name="evaluator" type="evaluatorType">
       <xs:annotation>
          <xs:documentation>
@@ -7203,7 +7203,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="evaluationProcess" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -7217,7 +7217,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="outcomes" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -7240,7 +7240,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="studyBudget" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -7263,7 +7263,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:element name="subTitl" type="simpleTextType">
       <xs:annotation>
          <xs:documentation>
@@ -7278,23 +7278,23 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <titl>Monitoring the Future: A Continuing Study of American Youth, 1995</titl>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <subTitl>A Continuing Study of American Youth, 1995</subTitl>
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <titl>Census of Population, 1950 [United States]: Public Use Microdata Sample</titl>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <subTitl>Public Use Microdata Sample</subTitl>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="subjectType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -7305,7 +7305,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="subject" type="subjectType">
       <xs:annotation>
          <xs:documentation>
@@ -7319,7 +7319,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="sumDscrType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -7338,7 +7338,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="sumDscr" type="sumDscrType">
       <xs:annotation>
          <xs:documentation>
@@ -7352,7 +7352,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="sumStatType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -7385,7 +7385,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="sumStat" type="sumStatType">
       <xs:annotation>
          <xs:documentation>
@@ -7415,14 +7415,14 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <sumStat type="median">4</sumStat>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="tableType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -7448,7 +7448,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="table" type="tableType">
       <xs:annotation>
          <xs:documentation>
@@ -7458,7 +7458,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="tbodyType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -7477,7 +7477,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="tbody" type="tbodyType">
       <xs:annotation>
          <xs:documentation>
@@ -7487,7 +7487,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="tgroupType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -7513,7 +7513,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="tgroup" type="tgroupType">
       <xs:annotation>
          <xs:documentation>
@@ -7523,7 +7523,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="theadType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -7542,7 +7542,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="thead" type="theadType">
       <xs:annotation>
          <xs:documentation>
@@ -7552,7 +7552,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="timeMethType" mixed="true">
       <xs:complexContent>
          <xs:extension base="conceptualTextType">
@@ -7560,7 +7560,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="timeMeth" type="timeMethType">
       <xs:annotation>
          <xs:documentation>
@@ -7591,7 +7591,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="timePrdType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextAndDateType">
@@ -7626,7 +7626,7 @@ These changes do not effect the namespace. 2013-11-14.
                      ]]></xhtml:samp>
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <timePrd event="end" date="1998-05-31">May 31, 1998</timePrd>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -7745,14 +7745,14 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <TotlResp>There are only 725 responses to this question since it was not asked in Tanzania.</TotlResp>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="txtType" mixed="true">
       <xs:complexContent>
          <xs:extension base="tableAndTextType">
@@ -7842,7 +7842,7 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <undocCod>Responses for categories 9 and 10 are unavailable.</undocCod>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -7865,7 +7865,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="universe" type="universeType">
       <xs:annotation>
          <xs:documentation>
@@ -7890,7 +7890,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="useStmtType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -7907,7 +7907,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="useStmt" type="useStmtType">
       <xs:annotation>
          <xs:documentation>
@@ -7921,7 +7921,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="valrngType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -7936,7 +7936,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="valrng" type="valrngType">
       <xs:annotation>
          <xs:documentation>
@@ -7967,7 +7967,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="varType">
       <xs:complexContent>
          <xs:extension base="baseElementType">
@@ -8102,7 +8102,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="var" type="varType">
       <xs:annotation>
          <xs:documentation>
@@ -8146,7 +8146,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:documentation>
       </xs:annotation>
    </xs:element>
-   
+
    <xs:complexType name="varFormatType" mixed="true">
       <xs:complexContent>
          <xs:extension base="simpleTextType">
@@ -8188,7 +8188,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="varFormat" type="varFormatType">
       <xs:annotation>
          <xs:documentation>
@@ -8210,7 +8210,7 @@ These changes do not effect the namespace. 2013-11-14.
                         <var>
                            <varFormat type="numeric" formatname="date.iso8601" schema="XML-Data" category="date" URI="http://www.w3.org/TR/1998/NOTE-XML-data/">19541022</varFormat>
                         </var>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>
@@ -8261,7 +8261,7 @@ These changes do not effect the namespace. 2013-11-14.
          </xs:extension>
       </xs:complexContent>
    </xs:complexType>
-   
+
    <xs:element name="varGrp" type="varGrpType">
       <xs:annotation>
          <xs:documentation>
@@ -8318,7 +8318,7 @@ These changes do not effect the namespace. 2013-11-14.
                   <xhtml:div class="example">
                      <xhtml:samp class="xml_sample"><![CDATA[
                         <varQnty>27</varQnty>
-                     ]]></xhtml:samp> 
+                     ]]></xhtml:samp>
                   </xhtml:div>
                </xhtml:div>
             </xhtml:div>

@@ -8,10 +8,10 @@
       Block Structural
 
         * div, p
-  
+
       This module declares the elements and their attributes used to
-      support block-level structural markup.            
-          
+      support block-level structural markup.
+
       This is the XML Schema Block Structural module for XHTML
       $Id$
     </xs:documentation>
@@ -25,12 +25,12 @@
 
   <xs:group name="div.content">
      <xs:sequence>
-        <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>     
+        <xs:group ref="Flow.mix" minOccurs="0" maxOccurs="unbounded"/>
      </xs:sequence>
-  </xs:group>    
+  </xs:group>
 
   <xs:complexType name="div.type" mixed="true">
-    <xs:group ref="div.content"/>     
+    <xs:group ref="div.content"/>
     <xs:attributeGroup ref="div.attlist"/>
   </xs:complexType>
 
@@ -40,15 +40,15 @@
   <xs:attributeGroup name="p.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
   </xs:attributeGroup>
-  
+
   <xs:group name="p.content">
      <xs:sequence>
-       <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>     
+       <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>
      </xs:sequence>
-  </xs:group>      
+  </xs:group>
 
   <xs:complexType name="p.type" mixed="true">
-    <xs:group ref="p.content"/>       
+    <xs:group ref="p.content"/>
     <xs:attributeGroup ref="p.attlist"/>
   </xs:complexType>
 

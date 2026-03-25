@@ -18,13 +18,13 @@
 
       This module defines elements and their attributes for
       simple presentation-related markup.
- 
+
       Elements defined here:
 
         * hr
         * b, big, i, small, sub, sup, tt
     </xs:documentation>
-    <xs:documentation 
+    <xs:documentation
         source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstract_modules.html#s_presentationmodule"/>
   </xs:annotation>
 
@@ -33,7 +33,7 @@
       <xs:documentation>
         Block Presentational module
         Elements defined here:
- 
+
          * hr
       </xs:documentation>
     </xs:annotation>

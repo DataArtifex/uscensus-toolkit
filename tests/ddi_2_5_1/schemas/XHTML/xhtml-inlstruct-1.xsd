@@ -15,12 +15,12 @@
   <xs:annotation>
     <xs:documentation>
       Inline Structural.
-      This module declares the elements and their attributes 
-      used to support inline-level structural markup.      
+      This module declares the elements and their attributes
+      used to support inline-level structural markup.
       This is the XML Schema Inline Structural element module for XHTML
 
         * br, span
-      
+
     </xs:documentation>
     <xs:documentation source="http://www.w3.org/TR/xhtml-modularization/abstract_modules.html#s_textmodule"/>
   </xs:annotation>
@@ -28,13 +28,13 @@
   <xs:attributeGroup name="br.attlist">
     <xs:attributeGroup ref="Core.attrib"/>
   </xs:attributeGroup>
-  
+
   <xs:group name="br.content">
      <xs:sequence/>
-  </xs:group>  
+  </xs:group>
 
   <xs:complexType name="br.type">
-    <xs:group ref="br.content"/>    
+    <xs:group ref="br.content"/>
     <xs:attributeGroup ref="br.attlist"/>
   </xs:complexType>
 
@@ -43,15 +43,15 @@
   <xs:attributeGroup name="span.attlist">
     <xs:attributeGroup ref="Common.attrib"/>
   </xs:attributeGroup>
-  
+
   <xs:group name="span.content">
     <xs:sequence>
-       <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>     
+       <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:group>
 
   <xs:complexType name="span.type" mixed="true">
-    <xs:group ref="span.content"/>   
+    <xs:group ref="span.content"/>
     <xs:attributeGroup ref="span.attlist"/>
   </xs:complexType>
 

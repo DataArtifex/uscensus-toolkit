@@ -14,13 +14,13 @@
   <xs:annotation>
     <xs:documentation>
       Inline Presentational Elements
-    
+
         * b, big, i, small, sub, sup, tt
-    
+
       This module declares the elements and their attributes used to
       support inline-level presentational markup.
     </xs:documentation>
-    <xs:documentation 
+    <xs:documentation
          source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstract_modules.html#s_presentationmodule"/>
   </xs:annotation>
 
@@ -32,13 +32,13 @@
     <xs:sequence>
        <xs:group ref="Inline.mix" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-  </xs:group>  
-    
+  </xs:group>
+
   <xs:complexType name="InlPres.type" mixed="true">
     <xs:group ref="InlPres.content"/>
     <xs:attributeGroup ref="InlPres.attlist"/>
   </xs:complexType>
-    
+
   <xs:element name="b" type="InlPres.type"/>
 
   <xs:element name="big" type="InlPres.type"/>

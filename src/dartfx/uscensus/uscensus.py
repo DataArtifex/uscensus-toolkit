@@ -354,6 +354,8 @@ class UsCensusDataset(BaseModel):
         return data
 
     def get_croissant(self, include_computed=False) -> mlc.Metadata:
+        if include_computed:
+            logging.debug("include_computed=True currently returns the same field set as default.")
         context = mlc.Context()
         context.is_live_dataset = True
         # metadata
@@ -419,9 +421,16 @@ class UsCensusDataset(BaseModel):
         uid = f"uscensus_{self.id}"
         urn = self.identifier
         # codeBook
-        xml = f'<codeBook ID="{uid}" ddiCodebookUrn="{urn}" version="{codebook_version}" xmlns="ddi:codebook:{codebook_version.replace(".", "_")}"'
+        xml = (
+            f'<codeBook ID="{uid}" ddiCodebookUrn="{urn}" version="{codebook_version}" '
+            f'xmlns="ddi:codebook:{codebook_version.replace(".", "_")}"'
+        )
         if include_schema:
-            xml += ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="ddi:codebook:2_5 https://ddialliance.org/hubfs/Specification/DDI-Codebook/2.5/XMLSchema/codebook.xsd"'
+            xml += (
+                ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+                'xsi:schemaLocation="ddi:codebook:2_5 '
+                'https://ddialliance.org/hubfs/Specification/DDI-Codebook/2.5/XMLSchema/codebook.xsd"'
+            )
         xml += ">"
         # docDscr
         xml += "<docDscr>"

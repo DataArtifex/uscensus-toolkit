@@ -7,19 +7,19 @@
     <xs:documentation>
       Hypertext Module
       This is the XML Schema Hypertext module for XHTML
-            
+
         * a
-            
+
       This module declares the anchor ('a') element type, which
       defines the source of a hypertext link. The destination
-      (or link 'target') is identified via its 'id' attribute 
+      (or link 'target') is identified via its 'id' attribute
       rather than the 'name' attribute as was used in HTML.
 
       $Id$
     </xs:documentation>
     <xs:documentation source="xhtml-copyright-1.xsd"/>
     <xs:documentation
-        source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstract_modules.html#s_hypertextmodule"/>    
+        source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstract_modules.html#s_hypertextmodule"/>
   </xs:annotation>
 
 
@@ -34,18 +34,18 @@
     <xs:attribute name="accesskey" type="Character"/>
     <xs:attribute name="tabindex" type="Number"/>
   </xs:attributeGroup>
-   
+
   <xs:group name="a.content">
      <xs:sequence>
-        <xs:group ref="InlNoAnchor.mix" minOccurs="0" maxOccurs="unbounded"/>     
+        <xs:group ref="InlNoAnchor.mix" minOccurs="0" maxOccurs="unbounded"/>
      </xs:sequence>
-  </xs:group>  
+  </xs:group>
 
   <xs:complexType name="a.type" mixed="true">
      <xs:group ref="a.content"/>
      <xs:attributeGroup ref="a.attlist"/>
   </xs:complexType>
- 
+
   <xs:element name="a" type="a.type"/>
 
 </xs:schema>
