@@ -121,6 +121,20 @@ log_cli_level = "DEBUG"
 log_cli_format = "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
+[tool.mypy]
+python_version = "3.12"
+mypy_path = ["src"]
+namespace_packages = true
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["mlcroissant"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["lxml", "lxml.*"]
+ignore_missing_imports = true
+
 [tool.ruff]
 line-length = 120
 target-version = "py312"

@@ -15,6 +15,8 @@ from .__about__ import __version__
 def _get_caller_name() -> str:
     """Returns the name of the function that called the current function."""
     frame = inspect.currentframe()
+    if frame is None or frame.f_back is None or frame.f_back.f_back is None:
+        return "unknown"
     try:
         caller_frame = frame.f_back.f_back  # f_back of the current frame's caller
         return caller_frame.f_code.co_name
@@ -130,6 +132,7 @@ class UsCensusCatalog(BaseModel):
     def datasets(self) -> dict[str, "UsCensusDataset"]:
         if not self._datasets:
             for dataset in self._get_datasets():
+                instance: UsCensusDataset
                 if dataset.get("c_isAggregate", False):
                     instance = UsCensusAggregatedDataset(api=self.api, **dataset)
                     self._datasets[instance.id.lower()] = instance
@@ -275,8 +278,8 @@ class UsCensusDataset(BaseModel):
                 return mlc.DataType.TEXT
             return mlc.DataType.TEXT
 
-    _geography: Geography = None
-    _variables: dict[str, Variable] = None
+    _geography: Geography | None = None
+    _variables: dict[str, Variable] | None = None
 
     @cached_property
     def id(self):
