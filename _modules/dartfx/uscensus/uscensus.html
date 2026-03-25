@@ -235,15 +235,13 @@
                 <span class="n">instance</span><span class="p">:</span> <span class="n">UsCensusDataset</span>
                 <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;c_isAggregate&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">instance</span> <span class="o">=</span> <span class="n">UsCensusAggregatedDataset</span><span class="p">(</span><span class="n">api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">instance</span>
                 <span class="k">elif</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;c_isMicrodata&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">instance</span> <span class="o">=</span> <span class="n">UsCensusMicrodataDataset</span><span class="p">(</span><span class="n">api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">instance</span>
                 <span class="k">elif</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;c_isTimeseries&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">instance</span> <span class="o">=</span> <span class="n">UsCensusTimeSeriesDataset</span><span class="p">(</span><span class="n">api</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">,</span> <span class="o">**</span><span class="n">dataset</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">instance</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown dataset type: </span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;identifier&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datasets</span>
 
     <span class="nd">@property</span>
@@ -291,7 +289,14 @@
 <div class="viewcode-block" id="UsCensusCatalog.get_dataset">
 <a class="viewcode-back" href="../../../modules.html#dartfx.uscensus.uscensus.UsCensusCatalog.get_dataset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;UsCensusDataset&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="n">dataset_id</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span></div>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dataset</span>
+        <span class="n">lookup_id</span> <span class="o">=</span> <span class="n">dataset_id</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">existing_id</span><span class="p">,</span> <span class="n">existing_dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">existing_id</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">lookup_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">existing_dataset</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span></div>
 </div>
 
 
@@ -510,7 +515,7 @@
             <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span><span class="p">,</span>
             <span class="n">content_url</span><span class="o">=</span><span class="n">content_url</span><span class="p">,</span>
-            <span class="n">encoding_format</span><span class="o">=</span><span class="n">mlc</span><span class="o">.</span><span class="n">EncodingFormat</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
+            <span class="n">encoding_formats</span><span class="o">=</span><span class="p">[</span><span class="n">mlc</span><span class="o">.</span><span class="n">EncodingFormat</span><span class="o">.</span><span class="n">JSON</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="n">distribution</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileobject</span><span class="p">)</span>
         <span class="n">metadata</span><span class="o">.</span><span class="n">distribution</span> <span class="o">=</span> <span class="n">distribution</span>
