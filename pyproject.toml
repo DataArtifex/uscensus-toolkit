@@ -7,7 +7,7 @@ name = "dartfx-uscensus"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = "MIT"
 keywords = []
 authors = [
@@ -16,12 +16,11 @@ authors = [
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
 ]
+
 dependencies = [
   "mlcroissant>=1.0.0",
   "pydantic>=2.0.0",
@@ -46,13 +45,25 @@ packages = ["src/dartfx"]
 [tool.hatch.version]
 path = "src/dartfx/uscensus/__about__.py"
 
-[tool.hatch.envs.default]
-dependencies = [
+[dependency-groups]
+dev = [
   "coverage[toml]>=6.5",
-  "pytest",
+  "pytest>=9",
   "lxml>=5.0.0",
-  "python-dotenv>=1.0.0"
+  "mypy>=1.0.0",
+  "python-dotenv>=1.0.0",
+  "ruff>=0.3.0",
+  "pre-commit>=3.0.0", 
 ]
+docs = [
+  "sphinx>=7.0.0",
+  "sphinx-rtd-theme>=1.2.0",
+  "myst-parser>=1.0.0",
+  "sphinx-copybutton>=0.5.0",
+]
+
+[tool.hatch.envs.default]
+dependencies = ["dev"]
 
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
@@ -67,14 +78,21 @@ cov = [
 ]
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.10", "3.11", "3.12"]
+python = ["3.12", "3.13"]
 
 [tool.hatch.envs.types]
-dependencies = [
-  "mypy>=1.0.0",
-]
+dependencies = ["dev"]
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/dartfx/uscensus tests}"
+
+[tool.hatch.envs.docs]
+dependencies = ["docs"]
+[tool.hatch.envs.docs.scripts]
+build = "sphinx-build -b html docs/source docs/build/html"
+serve = "python -m http.server -d docs/build/html"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.coverage.run]
 source_pkgs = ["dartfx/uscensus", "tests"]
@@ -97,3 +115,36 @@ exclude_lines = [
 
 [tool.pytest.ini_options]
 pythonpath = "src"
+testpaths = ["tests"]
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort
+  "B",   # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "UP",  # pyupgrade
+  "ARG", # flake8-unused-arguments
+  "PT",  # flake8-pytest-style
+]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["dartfx"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
