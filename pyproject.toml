@@ -22,9 +22,9 @@ classifiers = [
 ]
 
 dependencies = [
-  "mlcroissant>=1.0.0",
-  "pydantic>=2.0.0",
-  "requests_cache>1.0.0"
+  "mlcroissant>=1.0.16",
+  "pydantic>=2.10.0",
+  "requests_cache>=1.3.1"
 ]
 
 [project.urls]
@@ -47,19 +47,19 @@ path = "src/dartfx/uscensus/__about__.py"
 
 [dependency-groups]
 dev = [
-  "coverage[toml]>=6.5",
+  "coverage[toml]>=7.0.0",
   "pytest>=9",
-  "lxml>=5.0.0",
+  "lxml>=6.0.0",
   "mypy>=1.0.0",
   "python-dotenv>=1.0.0",
   "ruff>=0.3.0",
-  "pre-commit>=3.0.0",
+  "pre-commit>=4.0.0",
 ]
 docs = [
-  "sphinx>=7.0.0",
-  "sphinx-rtd-theme>=1.2.0",
-  "myst-parser>=1.0.0",
-  "sphinx-copybutton>=0.5.0",
+  "sphinx>=9.0.0",
+  "sphinx-rtd-theme>=3.0.0",
+  "myst-parser>=5.0.0",
+  "sphinx-copybutton>=0.5.2",
 ]
 
 [tool.hatch.envs.default]
@@ -123,9 +123,13 @@ log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
 [tool.mypy]
 python_version = "3.12"
-mypy_path = ["src"]
-namespace_packages = true
+check_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+show_error_codes = true
+mypy_path = "src"
 explicit_package_bases = true
+plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
 module = ["mlcroissant"]
