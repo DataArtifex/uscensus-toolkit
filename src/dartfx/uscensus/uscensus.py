@@ -292,35 +292,42 @@ class UsCensusDataset(BaseModel):
 
     @property
     def stats(self):
-        stats = {
-            "n_variables": len(self.variables),
-            "n_concepts": 0,
-            "n_codelists": 0,
-            "n_ranges": 0,
-            "types": {"none": 0},
-            "weights": {},
-        }
+        n_variables = len(self.variables)
+        n_concepts = 0
+        n_codelists = 0
+        n_ranges = 0
+        types: dict[str, int] = {"none": 0}
+        weights: dict[str, int] = {}
+
         for variable in self.variables.values():
             if variable.concept:
-                stats["n_concepts"] += 1
+                n_concepts += 1
             if variable.values:
                 if variable.values.item:
-                    stats["n_codelists"] += 1
+                    n_codelists += 1
                 if variable.values.range:
-                    stats["n_ranges"] += 1
+                    n_ranges += 1
             if variable.predicateType:
-                if variable.predicateType in stats["types"]:
-                    stats["types"][variable.predicateType] += 1
+                if variable.predicateType in types:
+                    types[variable.predicateType] += 1
                 else:
-                    stats["types"][variable.predicateType] = 1
+                    types[variable.predicateType] = 1
             else:
-                stats["types"]["none"] += 1
+                types["none"] += 1
             if variable.suggested_weight:
-                if variable.suggested_weight in stats["weights"]:
-                    stats["weights"][variable.suggested_weight] += 1
+                if variable.suggested_weight in weights:
+                    weights[variable.suggested_weight] += 1
                 else:
-                    stats["weights"][variable.suggested_weight] = 1
-        return stats
+                    weights[variable.suggested_weight] = 1
+
+        return {
+            "n_variables": n_variables,
+            "n_concepts": n_concepts,
+            "n_codelists": n_codelists,
+            "n_ranges": n_ranges,
+            "types": types,
+            "weights": weights,
+        }
 
     @property
     def access_url(self):

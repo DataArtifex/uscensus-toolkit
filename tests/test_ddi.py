@@ -2,7 +2,7 @@ import os
 from xml.dom import minidom
 
 import pytest
-from lxml import etree as ET  # type: ignore[import-untyped]
+from lxml import etree as ET
 
 
 @pytest.fixture
